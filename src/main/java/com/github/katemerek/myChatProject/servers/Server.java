@@ -1,43 +1,60 @@
 package com.github.katemerek.myChatProject.servers;
 
-import com.github.katemerek.myChatProject.clients.Client;
+import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.time.LocalDateTime;
+import java.util.Scanner;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+@Data
 public class Server {
-    private static final int PORT = 1234;
-    public static CopyOnWriteArrayList<ClientHandler> clients = new CopyOnWriteArrayList<>();
-    private Client client;
+    private final int portNumber;
 
-    public static void main(String[] args) {
-        try {
-            ServerSocket serverSocket = new ServerSocket(PORT);
-            System.out.println("Server is running and waiting for connections..");
+    public Server(int portNUmber) throws IOException {
+        this.portNumber = portNUmber;
+    }
 
-            // Accept incoming connections
+    public void startServer() {
+        try(ServerSocket serverSocket = new ServerSocket(portNumber)) {
+            System.out.println("Server started!");
+
+            System.out.println("Waiting for a client to connect...");
+
             while (true) {
-                Socket clientSocket = serverSocket.accept();
-                System.out.println("New client connected: " + clientSocket);
+                Socket socket = serverSocket.accept();
+                System.out.println("New Client connected." + LocalDateTime.now());
+                System.out.println("---------------------");
 
-                // Create a new client handler for the connected client
-                ClientHandler clientHandler = new ClientHandler(clientSocket);
-                clients.add(clientHandler);
-                new Thread(clientHandler).start();
+                //Thread to handle client messages
+                Thread client = new Thread(new CommunicationHandler(socket));
+
+                client.start();
             }
+
+
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
-    // Broadcast a message to all clients except the sender
-    public static void broadcast(String message, ClientHandler sender) {
-        for (ClientHandler client : clients) {
-            if (client != sender) {
-                client.sendMessage(message);
-            }
+    public static void main(String[] args) throws  IOException {
+        System.out.print("Pls, enter a port number for this server or press ENTER to use the default port '8888': ");
+        Scanner in = new Scanner(System.in);
+        String portNumber = in.nextLine();
+        in.reset();
+
+        int port = 8888;
+        try {
+            port = Integer.parseInt(portNumber);
+        } catch (Exception ignore) {
         }
+        System.out.println("You can now connect to this server via this port "+ port+"\n");
+        Server server = new Server(port);
+        server.startServer();
+
     }
 }
