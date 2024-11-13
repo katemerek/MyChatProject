@@ -2,16 +2,14 @@ package com.github.katemerek.myChatProject.servers;
 
 import java.io.*;
 import java.net.Socket;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class CommunicationHandler implements Runnable {
 
     private String name;
-    private BufferedReader clientInputStream;
-    private BufferedWriter clientOutputStream;
+    private BufferedReader buffReader;
+    private PrintWriter buffWriter;
     public Socket socket;
     public static ArrayList<CommunicationHandler> clients = new ArrayList<>();
 
@@ -19,9 +17,9 @@ public class CommunicationHandler implements Runnable {
     public CommunicationHandler(Socket socket) {
         try {
             this.socket = socket;
-            this.clientInputStream = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            this.clientOutputStream = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-            this.name = clientInputStream.readLine();
+            this.buffReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            this.buffWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+            this.name = buffReader.readLine();
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }
@@ -34,10 +32,10 @@ public class CommunicationHandler implements Runnable {
 
         while(socket.isConnected()){
             try {
-                messageFromClient = clientInputStream.readLine();
+                messageFromClient = buffReader.readLine();
                 broadcastMessage(messageFromClient);
             } catch(IOException e){
-                closeAll(socket, clientInputStream,  clientOutputStream);
+                closeAll(socket, buffReader, buffWriter);
                 break;
             }
         }
@@ -52,28 +50,23 @@ public class CommunicationHandler implements Runnable {
 
     public void broadcastMessage(String messageToSend){
         for(CommunicationHandler communicationHandler: clients){
-            try{
-                if(!communicationHandler.name.equals(name)){
-                    communicationHandler.clientOutputStream.newLine();
-                    communicationHandler.clientOutputStream.flush();
-                }
-            } catch(IOException e){
-                closeAll(socket,clientInputStream, clientOutputStream);
-
+            if(!communicationHandler.name.equals(name)){
+                communicationHandler.buffWriter.println(messageToSend);
+                communicationHandler.buffWriter.flush();
             }
         }
     }
 
 
-    public void closeAll(Socket socket, BufferedReader clientInputStream, BufferedWriter clientOutputStream){
+    public void closeAll(Socket socket, BufferedReader buffReader, PrintWriter buffWriter){
 
         removeClientHandler();
         try{
-            if(clientInputStream!= null){
-                clientInputStream.close();
+            if(buffReader!= null){
+                buffReader.close();
             }
-            if(clientOutputStream != null){
-                clientOutputStream.close();
+            if(buffWriter != null){
+                buffWriter.close();
             }
             if(socket != null){
                 socket.close();

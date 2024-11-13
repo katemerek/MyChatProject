@@ -5,18 +5,20 @@ import java.net.Socket;
 import java.util.Scanner;
 
 
-public class Client{
+public class Client implements Runnable {
     private String name;
     private Socket socket;
-    private BufferedWriter buffWriter;
+    private PrintWriter buffWriter;
     private BufferedReader buffReader;
+    private Scanner inputStream;
 
     public Client(String name, Socket socket) {
         try {
         this.name = name;
         this.socket = socket;
-        this.buffWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+        this.buffWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
         this.buffReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        inputStream = new Scanner(System.in);
 
         }catch (IOException e){
             closeAll(socket, buffReader, buffWriter);
@@ -24,46 +26,65 @@ public class Client{
     }
 
 
-    public void sendMessage(){
-        try{
-            Scanner sc = new Scanner(System.in);
-
-            while(socket.isConnected()){
-                String messageToSend = sc.nextLine();
-                buffWriter.write(name + ": " + messageToSend);
-                buffWriter.newLine();
-                buffWriter.flush();
-
-            }
-        } catch(IOException e){
-            closeAll(socket, buffReader, buffWriter);
-
-        }
-    }
-
-    public void readMessage(){
-        new Thread( new Runnable() {
-
-            @Override
-            public void run() {
-                String msfFromGroupChat;
-
-                while(socket.isConnected()){
-                    try{
-                        msfFromGroupChat = buffReader.readLine();
-                        System.out.println(msfFromGroupChat);
-                    } catch (IOException e){
-                        closeAll(socket, buffReader, buffWriter);
-                    }
-
+    public Thread sendMessage(){
+        return new Thread(() -> {
+            String line = "";
+            while (true) {
+                line = inputStream.nextLine();
+                if (line.equalsIgnoreCase("bye")) { //closes the chat
+                    closeAll(socket, buffReader, buffWriter);
+                    Thread.currentThread().interrupt();
+                    break;
                 }
-
+                buffWriter.println (name+":"+line+"\n");
+                buffWriter.flush(); //Prevents buffering of the message. Sends out the message immediately
             }
-
-        }).start();
+        });
     }
+    public Thread readMessage() {
+        return new Thread(() -> {
+            String line = "";
+            while (true) {
+
+                try {
+                    line = buffReader.readLine();
+                    if (line == null)
+                        break;
+
+                    System.out.println(line.replaceFirst(name, "You"));
+                } catch (IOException e) {
+                    System.err.println(e.getMessage());
+                    System.exit(-1);
+                    break;
+                }
+            }
+        });
+    }
+
+//    public void readMessage(){
+//        new Thread( new Runnable() {
+//
+//            @Override
+//            public void run() {
+//                String msg = "";
+//
+//                while(!msg.equals("exit")){
+//                    try{
+//                        System.out.println(name + " please, print the message:");
+//                        msg = inputStream.nextLine();
+//                        System.out.println(msg);
+//                    } catch (IOException e){
+//                        closeAll(socket, buffReader, buffWriter);
+//                    }
+//
+//                }
+//
+//            }
+//
+//        }).start();
+//    }
     // method to close everything in the socket
-    public void closeAll(Socket socket, BufferedReader buffReader, BufferedWriter buffWriter){
+    public void closeAll(Socket socket, BufferedReader buffReader, PrintWriter buffWriter){
         try{
             if(buffReader!= null){
                 buffReader.close();
@@ -79,6 +100,26 @@ public class Client{
         }
     }
 
+    @Override
+    public void run() {
+Thread sendMessage = sendMessage();
+        try { //Get the response
+            buffReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+Thread readMessage = readMessage();
+        sendMessage.start();
+        readMessage.start();
+        try {
+            sendMessage.join();
+            readMessage.join();
+            closeAll(socket, buffReader, buffWriter);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static void main(String[] args) throws IOException {
 
         String name = null;
@@ -91,8 +132,10 @@ public class Client{
             System.err.println("Name cannot be blank. Please enter your name");
         }
         Socket socket = new Socket("localhost", 8888);
-        Client client = new Client(name, socket);
-        client.readMessage();
-        client.sendMessage();
+         Client client = new Client(name, socket);
+         Thread readMessage = client.readMessage();
+         readMessage.start();
+
+
     }
 }
