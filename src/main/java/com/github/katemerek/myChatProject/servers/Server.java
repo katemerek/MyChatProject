@@ -12,11 +12,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 @Data
 public class Server {
-    private final int portNumber;
-
-    public Server(int portNUmber) throws IOException {
-        this.portNumber = portNUmber;
-    }
+    private static final int portNumber = 8888;
 
     public void startServer() {
         try(ServerSocket serverSocket = new ServerSocket(portNumber)) {
@@ -26,7 +22,7 @@ public class Server {
 
             while (true) {
                 Socket socket = serverSocket.accept();
-                System.out.println("New Client connected." + LocalDateTime.now());
+                System.out.println("New Client connected." + socket + LocalDateTime.now());
                 System.out.println("---------------------");
 
                 //Thread to handle client messages
@@ -40,20 +36,12 @@ public class Server {
             throw new RuntimeException(e);
         }
     }
+    public void closeServer() {
+        System.out.println("Server closed!");
+    }
 
     public static void main(String[] args) throws  IOException {
-        System.out.print("Pls, enter a port number for this server or press ENTER to use the default port '8888': ");
-        Scanner in = new Scanner(System.in);
-        String portNumber = in.nextLine();
-        in.reset();
-
-        int port = 8888;
-        try {
-            port = Integer.parseInt(portNumber);
-        } catch (Exception ignore) {
-        }
-        System.out.println("You can now connect to this server via this port "+ port+"\n");
-        Server server = new Server(port);
+        Server server = new Server();
         server.startServer();
 
     }

@@ -8,25 +8,20 @@ import java.util.List;
 
 
 public class CommunicationHandler implements Runnable {
-    private int messageCount = 0;
 
-    private String name = null;
-    public BufferedReader clientInputStream = null;
-    public PrintWriter clientOutputStream = null;
-    private Socket clientSocket;
-    private static List<CommunicationHandler> clients = new ArrayList<>();
+    private String name;
+    private BufferedReader clientInputStream;
+    private BufferedWriter clientOutputStream;
+    public Socket socket;
+    public static ArrayList<CommunicationHandler> clients = new ArrayList<>();
 
-    private CommunicationHandler(String name, boolean loggedInStatus) {
-        this.name = name;
-    }
 
-    public CommunicationHandler(Socket clientSocket) {
-        this.name = "Client";
-        this.clientSocket = clientSocket;
-
+    public CommunicationHandler(Socket socket) {
         try {
-            this.clientInputStream = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            this.clientOutputStream = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
+            this.socket = socket;
+            this.clientInputStream = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            this.clientOutputStream = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            this.name = clientInputStream.readLine();
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }
@@ -35,39 +30,56 @@ public class CommunicationHandler implements Runnable {
     @Override
     public void run() {
 
-        String inputMessageFromClient = "", recipientName = "", messageToReceiver = "";
+        String messageFromClient;
 
-        while (true) {
+        while(socket.isConnected()){
             try {
-                inputMessageFromClient = clientInputStream.readLine();
-                if (inputMessageFromClient == null) {
-                    System.err.println("Client disconnected");
-                    break;
-                }
-                while (inputMessageFromClient != null) {
-                    // Broadcast message to all clients
-                    for (CommunicationHandler aClient : clients) {
-                        aClient.clientOutputStream.println(inputMessageFromClient);
-                    }
-                }
-            }catch (IOException e) {
-                    System.out.println("An error occurred: " + e.getMessage());
-                } finally {
-                    try {
-                        clientInputStream.close();
-                        clientOutputStream.close();
-                        clientSocket.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
+                messageFromClient = clientInputStream.readLine();
+                broadcastMessage(messageFromClient);
+            } catch(IOException e){
+                closeAll(socket, clientInputStream,  clientOutputStream);
+                break;
             }
-
-        System.out.println(name +" has disconnected. Was handled by "+Thread.currentThread().getName() + " --"+ LocalDateTime.now());
+        }
     }
 
-    @Override
-    public String toString() {
-        return name;
+
+    public void removeClientHandler(){
+        clients.remove(this);
+        broadcastMessage("User " + name + " left the chat");
+    }
+
+
+    public void broadcastMessage(String messageToSend){
+        for(CommunicationHandler communicationHandler: clients){
+            try{
+                if(!communicationHandler.name.equals(name)){
+                    communicationHandler.clientOutputStream.newLine();
+                    communicationHandler.clientOutputStream.flush();
+                }
+            } catch(IOException e){
+                closeAll(socket,clientInputStream, clientOutputStream);
+
+            }
+        }
+    }
+
+
+    public void closeAll(Socket socket, BufferedReader clientInputStream, BufferedWriter clientOutputStream){
+
+        removeClientHandler();
+        try{
+            if(clientInputStream!= null){
+                clientInputStream.close();
+            }
+            if(clientOutputStream != null){
+                clientOutputStream.close();
+            }
+            if(socket != null){
+                socket.close();
+            }
+        } catch (IOException e){
+            e.getStackTrace();
+        }
     }
 }
