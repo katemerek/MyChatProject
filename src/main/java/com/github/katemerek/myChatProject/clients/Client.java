@@ -5,7 +5,7 @@ import java.net.Socket;
 import java.util.Scanner;
 
 
-public class Client implements Runnable {
+public class Client {
     private String name;
     private Socket socket;
     private PrintWriter buffWriter;
@@ -25,64 +25,44 @@ public class Client implements Runnable {
         }
     }
 
+    // method to send messages using thread
+    public void sendMessage(){
+        buffWriter.write(name);
+        buffWriter.println();
+        buffWriter.flush();
 
-    public Thread sendMessage(){
-        return new Thread(() -> {
-            String line = "";
-            while (true) {
-                line = inputStream.nextLine();
-                if (line.equalsIgnoreCase("bye")) { //closes the chat
-                    closeAll(socket, buffReader, buffWriter);
-                    Thread.currentThread().interrupt();
-                    break;
-                }
-                buffWriter.println (name+":"+line+"\n");
-                buffWriter.flush(); //Prevents buffering of the message. Sends out the message immediately
-            }
-        });
+        Scanner sc = new Scanner(System.in);
+
+        while(socket.isConnected()){
+            String messageToSend = sc.nextLine();
+            buffWriter.write(name + ": " + messageToSend);
+            buffWriter.println();
+            buffWriter.flush();
+
+        }
     }
-    public Thread readMessage() {
-        return new Thread(() -> {
-            String line = "";
-            while (true) {
+    // method to read messages using thread
+    public void readMessage(){
+        new Thread( new Runnable() {
 
-                try {
-                    line = buffReader.readLine();
-                    if (line == null)
-                        break;
+            @Override
+            public void run() {
+                String msfFromGroupChat;
 
-                    System.out.println(line.replaceFirst(name, "You"));
-                } catch (IOException e) {
-                    System.err.println(e.getMessage());
-                    System.exit(-1);
-                    break;
+                while(socket.isConnected()){
+                    try{
+                        msfFromGroupChat = buffReader.readLine();
+                        System.out.println(msfFromGroupChat);
+                    } catch (IOException e){
+                        closeAll(socket, buffReader, buffWriter);
+                    }
+
                 }
-            }
-        });
-    }
 
-//    public void readMessage(){
-//        new Thread( new Runnable() {
-//
-//            @Override
-//            public void run() {
-//                String msg = "";
-//
-//                while(!msg.equals("exit")){
-//                    try{
-//                        System.out.println(name + " please, print the message:");
-//                        msg = inputStream.nextLine();
-//                        System.out.println(msg);
-//                    } catch (IOException e){
-//                        closeAll(socket, buffReader, buffWriter);
-//                    }
-//
-//                }
-//
-//            }
-//
-//        }).start();
-//    }
+            }
+
+        }).start();
+    }
     // method to close everything in the socket
     public void closeAll(Socket socket, BufferedReader buffReader, PrintWriter buffWriter){
         try{
@@ -100,25 +80,6 @@ public class Client implements Runnable {
         }
     }
 
-    @Override
-    public void run() {
-Thread sendMessage = sendMessage();
-        try { //Get the response
-            buffReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-Thread readMessage = readMessage();
-        sendMessage.start();
-        readMessage.start();
-        try {
-            sendMessage.join();
-            readMessage.join();
-            closeAll(socket, buffReader, buffWriter);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     public static void main(String[] args) throws IOException {
 
@@ -133,8 +94,8 @@ Thread readMessage = readMessage();
         }
         Socket socket = new Socket("localhost", 8888);
          Client client = new Client(name, socket);
-         Thread readMessage = client.readMessage();
-         readMessage.start();
+         client.readMessage();
+         client.sendMessage();
 
 
     }

@@ -20,6 +20,8 @@ public class CommunicationHandler implements Runnable {
             this.buffReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.buffWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
             this.name = buffReader.readLine();
+            clients.add(this);
+            broadcastMessage("Hello,  " + name + "! You have connected to chat!");
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }
@@ -49,10 +51,10 @@ public class CommunicationHandler implements Runnable {
 
 
     public void broadcastMessage(String messageToSend){
-        for(CommunicationHandler communicationHandler: clients){
-            if(!communicationHandler.name.equals(name)){
-                communicationHandler.buffWriter.println(messageToSend);
-                communicationHandler.buffWriter.flush();
+        for(CommunicationHandler client: clients){
+            if(!client.name.equals(name)){
+                client.buffWriter.println(messageToSend);
+                client.buffWriter.flush();
             }
         }
     }
