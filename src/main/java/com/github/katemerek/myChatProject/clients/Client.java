@@ -10,7 +10,6 @@ public class Client {
     private Socket socket;
     private PrintWriter buffWriter;
     private BufferedReader buffReader;
-    private Scanner inputStream;
 
     public Client(String name, Socket socket) {
         try {
@@ -18,8 +17,6 @@ public class Client {
         this.socket = socket;
         this.buffWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
         this.buffReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        inputStream = new Scanner(System.in);
-
         }catch (IOException e){
             closeAll(socket, buffReader, buffWriter);
         }
@@ -52,7 +49,12 @@ public class Client {
                 while(socket.isConnected()){
                     try{
                         msfFromGroupChat = buffReader.readLine();
-                        System.out.println(msfFromGroupChat);
+//                        if(msfFromGroupChat.equals(name + ": bye")){ ДОДЕЛАТЬ, как выйти из чата???
+//                            closeAll(socket, buffReader, buffWriter);
+//                            Thread.currentThread().interrupt();
+//                            break;
+//                        }
+                        System.out.println( msfFromGroupChat);
                     } catch (IOException e){
                         closeAll(socket, buffReader, buffWriter);
                     }
