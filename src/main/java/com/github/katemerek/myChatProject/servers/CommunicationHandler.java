@@ -1,5 +1,6 @@
 package com.github.katemerek.myChatProject.servers;
 
+import com.github.katemerek.myChatProject.models.Person;
 import lombok.Data;
 
 import java.io.*;
@@ -14,6 +15,7 @@ public class CommunicationHandler implements Runnable {
     private PrintWriter buffWriter;
     public Socket socket;
     private boolean loggingStatus;
+    private Person person;
     public static ArrayList<CommunicationHandler> clients = new ArrayList<>();
 
 
@@ -26,7 +28,6 @@ public class CommunicationHandler implements Runnable {
             this.name = buffReader.readLine();
             this.loggingStatus = true;
             clients.add(this);
-
             broadcastMessage("Hello,  " + name + "! You have connected to chat!");
             checkOnlineClients();
         } catch (IOException e) {
@@ -38,6 +39,7 @@ public class CommunicationHandler implements Runnable {
     public void run() {
 
         String messageFromClient;
+
 
         while(socket.isConnected()){
             try {
