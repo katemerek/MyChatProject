@@ -1,6 +1,6 @@
 package com.github.katemerek.myChatProject.controllers;
 
-import com.github.katemerek.FirstSecurityApp.services.AdminService;
+import com.github.katemerek.myChatProject.view.HelloApplication;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class HelloController {
 
     @GetMapping("/hello")
-    public String hello() {
-        return "hello";
+    public HelloApplication hello() {
+        return HelloApplication.getInstance();
     }
 }

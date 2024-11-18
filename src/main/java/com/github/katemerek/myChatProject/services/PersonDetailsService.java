@@ -6,11 +6,13 @@ import com.github.katemerek.myChatProject.security.PersonDetails;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
+@Component
 public class PersonDetailsService implements UserDetailsService {
     private final PeopleRepository peopleRepository;
 
@@ -18,13 +20,13 @@ public class PersonDetailsService implements UserDetailsService {
         this.peopleRepository = peopleRepository;
     }
 
-    public Optional<Person> findByUserName(String username) {
-        return peopleRepository.findByUsername(username);
+    public Optional<Person> findByName(String name) {
+        return peopleRepository.findByName(name);
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<Person> person = peopleRepository.findByUsername(username);
+    public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
+        Optional<Person> person = peopleRepository.findByName(name);
         if (person.isEmpty()) {
             throw new UsernameNotFoundException("Пользователь не найден!");
         }

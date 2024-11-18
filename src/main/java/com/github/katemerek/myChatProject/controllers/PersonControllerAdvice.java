@@ -1,7 +1,7 @@
 package com.github.katemerek.myChatProject.controllers;
 
-import com.github.katemerek.FirstSecurityApp.util.ErrorResponse;
-import com.github.katemerek.FirstSecurityApp.util.PersonNotCreated;
+import com.github.katemerek.myChatProject.util.ErrorResponse;
+import com.github.katemerek.myChatProject.util.PersonNotCreated;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
