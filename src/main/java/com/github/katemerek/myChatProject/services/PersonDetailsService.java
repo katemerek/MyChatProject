@@ -20,10 +20,6 @@ public class PersonDetailsService implements UserDetailsService {
         this.peopleRepository = peopleRepository;
     }
 
-    public Optional<Person> findByName(String name) {
-        return peopleRepository.findByName(name);
-    }
-
     @Override
     public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
         Optional<Person> person = peopleRepository.findByName(name);

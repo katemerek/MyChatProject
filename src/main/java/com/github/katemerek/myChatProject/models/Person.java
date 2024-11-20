@@ -9,7 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "registeredPerson")
+@Table(name = "users")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,7 +22,7 @@ public class Person {
 
     @NotBlank(message = "Необходимо ввести имя пользователя")
     @Size(min = 2, max = 30, message = "Имя должно быть от 2 до 30 символов длиной")
-    @Column(name = "username")
+    @Column(name = "name")
     private String name;
 
     @NotBlank(message = "Необходимо ввести пароль")
@@ -32,7 +32,4 @@ public class Person {
     @Min(value = 1924, message = "Пользователь должен быть моложе 1924 года рождения ")
     @Column(name = "year_of_birth")
     private int yearOfBirth;
-
-    @Column(name = "role")
-    private String role;
 }
