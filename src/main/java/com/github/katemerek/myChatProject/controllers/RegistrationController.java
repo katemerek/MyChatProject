@@ -5,10 +5,16 @@ import com.github.katemerek.myChatProject.dto.PersonDto;
 import com.github.katemerek.myChatProject.mapper.PersonMapper;
 import com.github.katemerek.myChatProject.models.Person;
 import com.github.katemerek.myChatProject.services.RegistrationService;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 
+import javafx.stage.Stage;
+import net.rgielen.fxweaver.core.FxWeaver;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +24,7 @@ import java.io.FileOutputStream;
 @Component
 @FxmlView
 public class RegistrationController  {
+    private final FxWeaver fxWeaver;
     @FXML
     private TextField txtName;
     @FXML
@@ -26,13 +33,16 @@ public class RegistrationController  {
     private TextField txtPassword;
     @FXML
     Button buttonRegister;
+    @FXML
+    Button buttonReturn;
 
     private final PersonMapper personMapper;
     private final RegistrationService registrationService;
 
-    public RegistrationController(PersonMapper personMapper, RegistrationService registrationService) {
+    public RegistrationController(PersonMapper personMapper, RegistrationService registrationService, FxWeaver fxWeaver) {
         this.personMapper = personMapper;
         this.registrationService = registrationService;
+        this.fxWeaver = fxWeaver;
     }
 
     @FXML
@@ -45,10 +55,13 @@ public class RegistrationController  {
         Person personAdd = personMapper.toPerson(personDto);
         System.out.println(personAdd);
         registrationService.register(personAdd);
+        returnToLogin();
     }
-    @FXML
-    void initialize() {
-        assert buttonRegister != null : "fx:id=\"button\" was not injected: check your FXML file 'RegistrationController.fxml'.";
+    public void returnToLogin() {
+        Parent root = fxWeaver.loadView(LoginController.class);
+        Stage secondaryStage = (Stage) buttonReturn.getScene().getWindow();
+        secondaryStage.setScene(new Scene(root));
+        secondaryStage.show();
     }
     public void onStageClose() {
         // создали экземпляр класс

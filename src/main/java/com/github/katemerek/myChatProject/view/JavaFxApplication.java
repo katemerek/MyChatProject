@@ -1,14 +1,12 @@
 package com.github.katemerek.myChatProject.view;
 
 import com.github.katemerek.myChatProject.MyChatProjectApplication;
-import com.github.katemerek.myChatProject.controllers.RegistrationController;
-import com.github.katemerek.myChatProject.mapper.PersonMapper;
+import com.github.katemerek.myChatProject.controllers.LoginController;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import lombok.AllArgsConstructor;
 import net.rgielen.fxweaver.core.FxWeaver;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -31,7 +29,7 @@ public class JavaFxApplication extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         FxWeaver fxWeaver = applicationContext.getBean(FxWeaver.class);
-        Parent root = fxWeaver.loadView(RegistrationController.class);
+        Parent root = fxWeaver.loadView(LoginController.class);
         Scene scene = new Scene(root);
        primaryStage.setScene(scene);
         primaryStage.show();
