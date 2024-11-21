@@ -2,6 +2,7 @@ package com.github.katemerek.myChatProject.servers;
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.Scanner;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+@Component
 @Data
 public class Server {
     private static final int portNumber = 8888;
@@ -38,11 +40,5 @@ public class Server {
     }
     public void closeServer() {
         System.out.println("Server closed!");
-    }
-
-    public static void main(String[] args) throws  IOException {
-        Server server = new Server();
-        server.startServer();
-
     }
 }

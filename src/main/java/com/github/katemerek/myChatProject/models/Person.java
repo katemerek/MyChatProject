@@ -32,4 +32,7 @@ public class Person {
     @Min(value = 1924, message = "Пользователь должен быть моложе 1924 года рождения ")
     @Column(name = "year_of_birth")
     private int yearOfBirth;
+
+    @Column(name = "status")
+    private Boolean status;
 }

@@ -1,5 +1,6 @@
 package com.github.katemerek.myChatProject.controllers;
 
+import com.github.katemerek.myChatProject.clients.Client;
 import com.github.katemerek.myChatProject.mapper.PersonMapper;
 import com.github.katemerek.myChatProject.services.RegistrationService;
 import javafx.event.ActionEvent;
@@ -14,6 +15,9 @@ import net.rgielen.fxweaver.core.FxWeaver;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
+
+import java.io.IOException;
+import java.net.Socket;
 
 @Component
 @FxmlView
@@ -44,14 +48,30 @@ public class LoginController {
         assert buttonLogin != null : "fx:id=\"button\" was not injected: check your FXML file 'LoginController.fxml'.";
     }
 
-    public void loginUser() {
-        String name = txtName.getText();
-        registrationService.loadUserByName(name);
-
+    public void loginUser() throws IOException {
+        registrationService.loadUserByName(username());
+        switchOnChat();
+        Client client1 = new Client(username(), new Socket("localhost", 8888));
+        client1.readMessage();
+        client1.sendMessage();
+        Client client2 = new Client(username(), new Socket("localhost", 8888));
+        client2.readMessage();
+        client2.sendMessage();
 
     }
+    public String username(){
+        return txtName.getText();
+    }
+
     public void addNewUser() {
         Parent root = fxWeaver.loadView(RegistrationController.class);
+        Stage secondaryStage = (Stage) buttonRegistration.getScene().getWindow();
+        secondaryStage.setScene(new Scene(root));
+        secondaryStage.show();
+    }
+
+    public void switchOnChat() {
+        Parent root = fxWeaver.loadView(ChatController.class);
         Stage secondaryStage = (Stage) buttonRegistration.getScene().getWindow();
         secondaryStage.setScene(new Scene(root));
         secondaryStage.show();

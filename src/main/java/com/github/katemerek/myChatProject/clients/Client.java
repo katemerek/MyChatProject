@@ -1,19 +1,24 @@
 package com.github.katemerek.myChatProject.clients;
 
+import com.github.katemerek.myChatProject.controllers.LoginController;
+import com.github.katemerek.myChatProject.message.Message;
+import com.github.katemerek.myChatProject.models.Person;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
 
 public class Client {
-    private String name;
     private Socket socket;
     private PrintWriter buffWriter;
     private BufferedReader buffReader;
+    private Person person;
+    private Message message;
+    private LoginController loginController;
 
     public Client(String name, Socket socket) {
         try {
-        this.name = name;
         this.socket = socket;
         this.buffWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
         this.buffReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -24,15 +29,13 @@ public class Client {
 
     // method to send messages using thread
     public void sendMessage(){
-        buffWriter.write(name);
+        buffWriter.write(loginController.username());
         buffWriter.println();
         buffWriter.flush();
 
-        Scanner sc = new Scanner(System.in);
-
         while(socket.isConnected()){
-            String messageToSend = sc.nextLine();
-            buffWriter.write(name + ": " + messageToSend);
+            String messageToSend = message.getMsg();
+            buffWriter.write(person.getName() + ": " + messageToSend);
             buffWriter.println();
             buffWriter.flush();
 
@@ -49,11 +52,6 @@ public class Client {
                 while(socket.isConnected()){
                     try{
                         msfFromGroupChat = buffReader.readLine();
-//                        if(msfFromGroupChat.equals(name + ": bye")){ ДОДЕЛАТЬ, как выйти из чата???
-//                            closeAll(socket, buffReader, buffWriter);
-//                            Thread.currentThread().interrupt();
-//                            break;
-//                        }
                         System.out.println( msfFromGroupChat);
                     } catch (IOException e){
                         closeAll(socket, buffReader, buffWriter);
@@ -82,23 +80,4 @@ public class Client {
         }
     }
 
-
-    public static void main(String[] args) throws IOException {
-
-        String name = null;
-        System.out.print("Please, enter your name here: ");
-        Scanner in = new Scanner(System.in);
-
-        while (true) {
-            name = in.nextLine();
-            if (!name.isBlank()) break;
-            System.err.println("Name cannot be blank. Please enter your name");
-        }
-        Socket socket = new Socket("localhost", 8888);
-         Client client = new Client(name, socket);
-         client.readMessage();
-         client.sendMessage();
-
-
-    }
 }
