@@ -51,12 +51,12 @@ public class LoginController {
     public void loginUser() throws IOException {
         registrationService.loadUserByName(username());
         switchOnChat();
-        Client client1 = new Client(username(), new Socket("localhost", 8888));
-        client1.readMessage();
-        client1.sendMessage();
-        Client client2 = new Client(username(), new Socket("localhost", 8888));
-        client2.readMessage();
-        client2.sendMessage();
+//        Client client1 = new Client(username(), new Socket("localhost", 8888));
+//        client1.readMessage();
+//        client1.sendMessage();
+//        Client client2 = new Client(username(), new Socket("localhost", 8888));
+//        client2.readMessage();
+//        client2.sendMessage();
 
     }
     public String username(){
