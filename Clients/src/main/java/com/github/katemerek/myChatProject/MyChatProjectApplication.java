@@ -10,9 +10,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class MyChatProjectApplication {
 
 	public static void main(String[] args) {
-		Server server = new Server();
-
-		Thread serverThread = new Thread();
 		Application.launch(JavaFxApplication.class, args);
 	}
 

@@ -38,4 +38,9 @@ public class Server {
     public void closeServer() {
         System.out.println("Server closed!");
     }
+
+    public static void main(String[] args) throws IOException {
+        Server server = new Server();
+        server.startServer();
+    }
 }
