@@ -1,5 +1,7 @@
-package com.github.katemerek.server.servers;
+package com.github.katemerek.clients.servers;
 
+import com.github.katemerek.clients.models.Person;
+import com.github.katemerek.clients.services.RegistrationService;
 import lombok.Data;
 
 import java.io.*;
@@ -15,6 +17,8 @@ public class CommunicationHandler implements Runnable {
     private PrintWriter buffWriter;
     public Socket socket;
     private boolean status;
+    private Person person;
+    private RegistrationService registrationService;
     public static ArrayList clients;
 
 
@@ -24,7 +28,9 @@ public class CommunicationHandler implements Runnable {
             this.socket = socket;
             this.buffReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.buffWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
-            clients.add(this);
+            this.name = person.getName();
+            person.setStatus(true);
+            clients = registrationService.checkTrueLoggingStatus();
             sendMessage("Hello,  " + name + "! You have connected to chat!");
 //            checkOnlineClients();
         } catch (IOException e) {
