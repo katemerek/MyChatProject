@@ -29,8 +29,8 @@ public class Server {
 
                 //Thread to handle client messages
                 Thread client = new Thread(new CommunicationHandler(socket));
-
-                client.start();
+//
+//                client.start();
             }
 
 

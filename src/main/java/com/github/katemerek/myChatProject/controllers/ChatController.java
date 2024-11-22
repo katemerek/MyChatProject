@@ -1,11 +1,14 @@
 package com.github.katemerek.myChatProject.controllers;
 
+import com.github.katemerek.myChatProject.clients.Client;
 import com.github.katemerek.myChatProject.servers.CommunicationHandler;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
+import lombok.Setter;
 import net.rgielen.fxweaver.core.FxmlView;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.swing.text.html.ImageView;
@@ -26,7 +29,10 @@ public class ChatController {
         @FXML ImageView microphoneImageView;
         @FXML Button buttonSend;
 
+        @Setter
         private CommunicationHandler communicationHandler;
+
+
 
 //        private double xOffset;
 //        private double yOffset;

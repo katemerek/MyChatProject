@@ -3,10 +3,12 @@ package com.github.katemerek.myChatProject.servers;
 import com.github.katemerek.myChatProject.models.Person;
 import com.github.katemerek.myChatProject.services.RegistrationService;
 import lombok.Data;
+import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
+
 
 @Data
 public class CommunicationHandler implements Runnable {

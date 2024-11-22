@@ -49,11 +49,12 @@ public class LoginController {
     }
 
     public void loginUser() throws IOException {
-        registrationService.loadUserByName(username());
+        registrationService.loadUserByName(txtName.getText());
+        Client client1 = new Client(txtName.getText(), new Socket("localhost", 8888));
+        client1.readMessage();
+        client1.sendMessage();
         switchOnChat();
-//        Client client1 = new Client(username(), new Socket("localhost", 8888));
-//        client1.readMessage();
-//        client1.sendMessage();
+
 //        Client client2 = new Client(username(), new Socket("localhost", 8888));
 //        client2.readMessage();
 //        client2.sendMessage();
