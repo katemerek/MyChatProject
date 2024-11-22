@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Component
 @Data
 public class Server {
-    private static final int portNumber = 8888;
+    private static final int portNumber = 9001;
 
     public void startServer() {
         try(ServerSocket serverSocket = new ServerSocket(portNumber)) {

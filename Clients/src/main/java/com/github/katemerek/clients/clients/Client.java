@@ -9,18 +9,21 @@ import java.net.Socket;
 
 
 public class Client {
+
     private Socket socket;
     private PrintWriter buffWriter;
     private BufferedReader buffReader;
-    private Person person;
-    private Message message;
+    private InputStream inputStream;
     private LoginController loginController;
+    private String name = "Liza";
 
-    public Client(String name, Socket socket) {
+    public Client( Socket socket) {
         try {
-        this.socket = socket;
-        this.buffWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
-        this.buffReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            this.socket = socket;
+            this.buffWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+            this.buffReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            inputStream = socket.getInputStream();
+
         }catch (IOException e){
             closeAll(socket, buffReader, buffWriter);
         }
@@ -28,13 +31,13 @@ public class Client {
 
     // method to send messages using thread
     public void sendMessage(){
-        buffWriter.write(loginController.username());
+        buffWriter.write(name);
         buffWriter.println();
         buffWriter.flush();
 
         while(socket.isConnected()){
-            String messageToSend = message.getMsg();
-            buffWriter.write(person.getName() + ": " + messageToSend);
+            String messageToSend = inputStream.toString();
+            buffWriter.write(name + ": " + messageToSend);
             buffWriter.println();
             buffWriter.flush();
 
@@ -51,7 +54,7 @@ public class Client {
                 while(socket.isConnected()){
                     try{
                         msfFromGroupChat = buffReader.readLine();
-                        System.out.println( msfFromGroupChat);
+                        System.out.println(msfFromGroupChat);
                     } catch (IOException e){
                         closeAll(socket, buffReader, buffWriter);
                     }
@@ -79,4 +82,13 @@ public class Client {
         }
     }
 
+
+    public static void main(String[] args) throws IOException {
+        Socket socket = new Socket("localhost", 9001);
+        Client client = new Client(socket);
+        client.readMessage();
+        client.sendMessage();
+
+
+    }
 }

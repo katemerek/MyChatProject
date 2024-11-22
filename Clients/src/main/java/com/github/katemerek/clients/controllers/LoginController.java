@@ -47,9 +47,8 @@ public class LoginController {
 
     public void loginUser() throws IOException {
         registrationService.loadUserByName(txtName.getText());
-        Client client1 = new Client(txtName.getText(), new Socket("localhost", 8888));
-        client1.readMessage();
-        client1.sendMessage();
+        Thread client1 = new Thread();
+        client1.start();
         switchOnChat();
 
 //        Client client2 = new Client(username(), new Socket("localhost", 8888));
