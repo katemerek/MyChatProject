@@ -6,9 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
     @SpringBootApplication
     public class ClientsApplication {
-
         public static void main(String[] args) {
             Application.launch(JavaFxApplication.class, args);
         }
-
     }
