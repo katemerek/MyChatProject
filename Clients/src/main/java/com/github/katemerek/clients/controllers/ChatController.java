@@ -1,5 +1,6 @@
 package com.github.katemerek.clients.controllers;
 
+import com.github.katemerek.clients.clients.Client;
 import com.github.katemerek.clients.servers.CommunicationHandler;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -25,6 +26,8 @@ public class ChatController {
         @FXML ImageView microphoneImageView;
         @FXML Button buttonSend;
 
+        private Client client;
+
         @Setter
         private CommunicationHandler communicationHandler;
 
@@ -38,7 +41,7 @@ public class ChatController {
         public void sendMessage() throws IOException {
             String msg = messageBox.getText();
             if (!messageBox.getText().isEmpty()) {
-                communicationHandler.sendMessage(msg);
+                client.sendMessage();
                 messageBox.clear();
             }
         }

@@ -1,6 +1,8 @@
 package com.github.katemerek.server.servers;
 
 import lombok.Data;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -12,25 +14,25 @@ import java.time.LocalDateTime;
 @Data
 public class Server {
     private static final int portNumber = 9001;
+    static Logger logger = LoggerFactory.getLogger(Server.class);
+
 
     public void startServer() {
-        try(ServerSocket serverSocket = new ServerSocket(portNumber)) {
+        try(ServerSocket listener = new ServerSocket(portNumber)) {
+            logger.info("Server started! Waiting for connections...");
             System.out.println("Server started!");
 
             System.out.println("Waiting for a client to connect...");
-
-            while (true) {
-                Socket socket = serverSocket.accept();
-                System.out.println("New Client connected." + socket + LocalDateTime.now());
-                System.out.println("---------------------");
-
-                //Thread to handle client messages
-                Thread client = new Thread(new CommunicationHandler(socket));
-//
-//                client.start();
+            try {
+                while (true) {
+                    logger.info("New Client connected");
+                    new CommunicationHandler(listener.accept()).start();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                listener.close();
             }
-
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

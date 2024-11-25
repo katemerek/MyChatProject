@@ -1,4 +1,4 @@
-package com.github.katemerek.clients.repositories;
+package com.github.katemerek.server.repositories;
 
 import com.github.katemerek.clients.models.Person;
 import org.springframework.data.jpa.repository.JpaRepository;

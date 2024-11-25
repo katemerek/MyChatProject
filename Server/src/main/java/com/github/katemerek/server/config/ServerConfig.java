@@ -1,12 +1,14 @@
-package com.github.katemerek.clients.config;
+package com.github.katemerek.server.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
 @Configuration
-public class Settings {
-    public String txtName;
-    public String txtPassword;
-    public String txtYearOfBird;
+public class ServerConfig {
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 }
