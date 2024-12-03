@@ -1,11 +1,12 @@
-package com.github.katemerek.server.repositories;
+package com.github.katemerek.dto.repositories;
 
-import com.github.katemerek.clients.models.Person;
+import com.github.katemerek.dto.models.Person;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+
 
 @Repository
 public interface PeopleRepository extends JpaRepository<Person, Integer> {

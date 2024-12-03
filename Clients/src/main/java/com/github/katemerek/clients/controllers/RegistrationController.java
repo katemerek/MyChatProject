@@ -1,10 +1,11 @@
 package com.github.katemerek.clients.controllers;
 
 import com.github.katemerek.clients.config.Settings;
-import com.github.katemerek.clients.dto.PersonDto;
-import com.github.katemerek.clients.mapper.PersonMapper;
-import com.github.katemerek.clients.models.Person;
-import com.github.katemerek.server.services.RegistrationService;
+import com.github.katemerek.dto.dto.PersonDto;
+import com.github.katemerek.dto.mapper.PersonMapper;
+import com.github.katemerek.dto.models.Person;
+import com.github.katemerek.dto.repositories.PeopleRepository;
+import com.github.katemerek.dto.services.RegistrationService;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -15,7 +16,10 @@ import javafx.stage.Stage;
 import lombok.RequiredArgsConstructor;
 import net.rgielen.fxweaver.core.FxWeaver;
 import net.rgielen.fxweaver.core.FxmlView;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.ComponentScans;
 import org.springframework.stereotype.Component;
 
 import java.beans.XMLEncoder;
@@ -24,7 +28,6 @@ import java.io.FileOutputStream;
 @Component
 @FxmlView
 @RequiredArgsConstructor
-@ComponentScan(basePackageClasses = RegistrationService.class)
 public class RegistrationController  {
     private final FxWeaver fxWeaver;
     @FXML
@@ -40,6 +43,7 @@ public class RegistrationController  {
 
     private final PersonMapper personMapper;
     private final RegistrationService registrationService;
+
 
     @FXML
     public void registerUser() {

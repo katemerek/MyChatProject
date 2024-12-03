@@ -1,8 +1,7 @@
 package com.github.katemerek.server.servers;
 
-import com.github.katemerek.clients.controllers.LoginController;
-import com.github.katemerek.clients.models.Person;
-import com.github.katemerek.server.services.RegistrationService;
+import com.github.katemerek.dto.models.Person;
+import com.github.katemerek.dto.services.RegistrationService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -17,14 +16,12 @@ import java.util.ArrayList;
 @Data
 @RequiredArgsConstructor
 public class CommunicationHandler extends Thread {
-    private String name;
     private Person person;
     private InputStream inputStream;
     private OutputStream outputStream;
     public Socket socket;
-    public static ArrayList<Person> clientsOnline = new ArrayList<>();
+    public static ArrayList <Person> clientsOnline = new ArrayList<>();
     private Logger logger = LoggerFactory.getLogger(CommunicationHandler.class);
-    private LoginController loginController;
     private RegistrationService registrationService;
     public CommunicationHandler (Socket socket) {
         this.socket = socket;
@@ -52,23 +49,23 @@ public class CommunicationHandler extends Thread {
         try{
             inputStream = socket.getInputStream();
             outputStream = socket.getOutputStream();
-            name = loginController.username();
-            registrationService.loadUserByName(name);
+            String firstMessage = String.valueOf(inputStream.read());
+            registrationService.loadUserByName(firstMessage);
             clientsOnline = registrationService.checkTrueLoggingStatus();
-            broadcastMessage("Hello,  " + name + "! You have connected to chat!");
+            broadcastMessage("Hello,  " + firstMessage + "! You have connected to chat!");
+            Person person = new Person();
+            person.setName(firstMessage);
             String messageFromClient;
             while (socket.isConnected()) {
                 messageFromClient = String.valueOf(inputStream.read());
-                if (messageFromClient != null) {
-                    logger.info(name + messageFromClient);
-                    broadcastMessage(messageFromClient);
-                }
+                logger.info(firstMessage + messageFromClient);
+                broadcastMessage(messageFromClient);
             }
     } catch (
     SocketException socketException) {
-        logger.error("Socket Exception for user " + name);
+        logger.error("Socket Exception for user " + person.getName(), socketException);
     } catch (Exception e){
-        logger.error("Duplicate Username : " + name);
+        logger.error("Duplicate Username : " + person.getName(), e);
     } finally {
         closeAll(socket, inputStream, outputStream);
     }
@@ -77,13 +74,13 @@ public class CommunicationHandler extends Thread {
 
     public void removeClientHandler() throws IOException {
         clientsOnline.remove(this);
-        broadcastMessage("User " + name + " left the chat");
+        broadcastMessage("User " + person.getName() + " left the chat");
     }
 
 
     public void broadcastMessage(String messageToSend) throws IOException {
         for(Person client: clientsOnline){
-            if(!client.getName().equals(name)){
+            if(!client.getName().equals(person.getName())){
                 outputStream.write(messageToSend.getBytes());
                 outputStream.flush();
             }

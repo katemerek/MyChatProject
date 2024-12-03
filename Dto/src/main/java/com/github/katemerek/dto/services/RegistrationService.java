@@ -1,26 +1,28 @@
-package com.github.katemerek.server.services;
+package com.github.katemerek.dto.services;
 
-import com.github.katemerek.clients.models.Person;
-import com.github.katemerek.server.servers.Server;
+import com.github.katemerek.dto.models.Person;
+import com.github.katemerek.dto.repositories.PeopleRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@ComponentScan ("com.github.katemerek.dto.repositories")
 public class RegistrationService {
 
-    private final com.github.katemerek.server.repositories.PeopleRepository peopleRepository;
+    private final PeopleRepository peopleRepository;
     private final PasswordEncoder passwordEncoder;
-    private Server server;
     private Person person;
 
     public void loadUserByName(String name) throws UsernameNotFoundException, IOException {

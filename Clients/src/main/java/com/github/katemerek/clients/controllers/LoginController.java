@@ -1,7 +1,7 @@
 package com.github.katemerek.clients.controllers;
 
-import com.github.katemerek.clients.mapper.PersonMapper;
-import com.github.katemerek.server.services.RegistrationService;
+import com.github.katemerek.dto.mapper.PersonMapper;
+import com.github.katemerek.dto.services.RegistrationService;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;

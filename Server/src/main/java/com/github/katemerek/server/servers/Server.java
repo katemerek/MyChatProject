@@ -7,8 +7,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.net.Socket;
-import java.time.LocalDateTime;
 
 @Component
 @Data
@@ -25,8 +23,8 @@ public class Server {
             System.out.println("Waiting for a client to connect...");
             try {
                 while (true) {
-                    logger.info("New Client connected");
                     new CommunicationHandler(listener.accept()).start();
+                    logger.info("New Client connected");
                 }
             } catch (Exception e) {
                 e.printStackTrace();

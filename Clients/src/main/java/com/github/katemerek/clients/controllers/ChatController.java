@@ -1,7 +1,6 @@
 package com.github.katemerek.clients.controllers;
 
 import com.github.katemerek.clients.clients.Client;
-import com.github.katemerek.clients.servers.CommunicationHandler;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -28,8 +27,6 @@ public class ChatController {
 
         private Client client;
 
-        @Setter
-        private CommunicationHandler communicationHandler;
 
 
 

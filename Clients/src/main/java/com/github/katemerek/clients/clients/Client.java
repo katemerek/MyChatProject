@@ -1,8 +1,6 @@
 package com.github.katemerek.clients.clients;
 
 import com.github.katemerek.clients.controllers.LoginController;
-import com.github.katemerek.clients.message.Message;
-import com.github.katemerek.clients.models.Person;
 
 import java.io.*;
 import java.net.Socket;

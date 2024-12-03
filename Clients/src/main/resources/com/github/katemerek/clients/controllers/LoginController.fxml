@@ -13,14 +13,15 @@
 <GridPane alignment="center" hgap="10" style="-fx-background-color: AZURE;" vgap="10" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.katemerek.clients.controllers.LoginController">
     <padding><Insets bottom="40" left="40" right="40" top="40" /></padding>
     <columnConstraints>
-        <ColumnConstraints halignment="RIGHT" maxWidth="Infinity" minWidth="100.0" prefWidth="100.0">
+        <ColumnConstraints halignment="RIGHT" maxWidth="Infinity" minWidth="100.0" prefWidth="106.0">
         </ColumnConstraints>
-        <ColumnConstraints hgrow="ALWAYS" maxWidth="Infinity" minWidth="200.0" prefWidth="200.0">
+        <ColumnConstraints hgrow="ALWAYS" maxWidth="Infinity" minWidth="157.0" prefWidth="194.0">
         </ColumnConstraints>
+      <ColumnConstraints />
     </columnConstraints>
 
     <!-- Add Header Label -->
-    <Label text="Добро пожаловать в MyChat!" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="0" GridPane.rowSpan="1">
+    <Label text="Добро пожаловать в MyChat!" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowSpan="1">
         <font>
             <Font name="Comic Sans MS Bold" size="20.0" />
         </font>
@@ -32,7 +33,7 @@
 
 
     <!-- Add Name Label -->
-    <Label text="Имя:" textFill="#1d31c6" GridPane.columnIndex="0" GridPane.rowIndex="1">
+    <Label text="Имя:" textFill="#1d31c6" GridPane.rowIndex="1">
     </Label>
     <!-- Add Name Text Field -->
     <TextField fx:id="txtName" prefHeight="40" GridPane.columnIndex="1" GridPane.rowIndex="1" />
@@ -40,14 +41,14 @@
 
 
     <!-- Add Password Label -->
-    <Label text="Пароль:" textFill="#1d31c6" GridPane.columnIndex="0" GridPane.rowIndex="3">
+    <Label text="Пароль:" textFill="#1d31c6" GridPane.rowIndex="3">
     </Label>
     <!-- Add Password Field -->
     <PasswordField fx:id="txtPassword" prefHeight="40" GridPane.columnIndex="1" GridPane.rowIndex="3" />
 
 
     <!-- Add Registration Button -->
-    <Button fx:id="buttonRegistration" alignment="CENTER" onAction="#addNewUser" prefHeight="40" prefWidth="92.0" text="Регистрация" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.rowSpan="1" GridPane.valignment="CENTER">
+    <Button fx:id="buttonRegistration" alignment="CENTER" onAction="#addNewUser" prefHeight="40" prefWidth="92.0" text="Регистрация" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowIndex="4" GridPane.rowSpan="1" GridPane.valignment="CENTER">
         <GridPane.margin>
             <Insets bottom="20" left="0" right="0" top="20" />
         </GridPane.margin>
@@ -55,7 +56,7 @@
 
         <!-- Add Login Button -->
     </Button>
-   <Button fx:id="buttonLogin" alignment="CENTER" onAction="#loginUser" defaultButton="true" mnemonicParsing="false" prefHeight="40.0" prefWidth="62.0" text="Войти" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER">
+   <Button fx:id="buttonLogin" alignment="CENTER" defaultButton="true" mnemonicParsing="false" onAction="#loginUser" prefHeight="40.0" prefWidth="62.0" text="Войти" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER">
       <font>
          <Font size="14.0" />
       </font>

@@ -1,4 +1,4 @@
-package com.github.katemerek.server.models;
+package com.github.katemerek.dto.models;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;

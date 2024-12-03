@@ -1,7 +1,6 @@
-package com.github.katemerek.clients.view;
+package com.github.katemerek.clients;
 
 import com.github.katemerek.clients.controllers.LoginController;
-import com.github.katemerek.clients.ClientsApplication;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Parent;
@@ -29,7 +28,7 @@ public class JavaFxApplication extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         FxWeaver fxWeaver = applicationContext.getBean(FxWeaver.class);
-        Parent root = fxWeaver.loadView(LoginController.class);
+        Parent root = fxWeaver.loadView(LoginController.class, "com.github.katemerek.clients.controllers.LoginController.fxml");
         Scene scene = new Scene(root);
        primaryStage.setScene(scene);
         primaryStage.show();
