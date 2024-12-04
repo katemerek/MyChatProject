@@ -1,76 +1,64 @@
 package com.github.katemerek.clients.clients;
 
+import com.github.katemerek.clients.controllers.ChatController;
 import com.github.katemerek.clients.controllers.LoginController;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
+@Component
+@RequiredArgsConstructor
 
-public class Client {
+public class Client extends Thread {
 
     private Socket socket;
-    private PrintWriter buffWriter;
-    private BufferedReader buffReader;
-    private InputStream inputStream;
+    private BufferedReader in;
+    private PrintWriter out;
     private LoginController loginController;
-    private String name = "Liza";
+    public ChatController chatController;
+    private String name;
+    Logger logger = LoggerFactory.getLogger(Client.class);
 
-    public Client( Socket socket) {
-        try {
-            this.socket = socket;
-            this.buffWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
-            this.buffReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            inputStream = socket.getInputStream();
-
-        }catch (IOException e){
-            closeAll(socket, buffReader, buffWriter);
-        }
+    public Client( String name) {
+            this.name = name;
     }
-
-    // method to send messages using thread
-    public void sendMessage(){
-        buffWriter.write(name);
-        buffWriter.println();
-        buffWriter.flush();
-
-        while(socket.isConnected()){
-            String messageToSend = inputStream.toString();
-            buffWriter.write(name + ": " + messageToSend);
-            buffWriter.println();
-            buffWriter.flush();
-
-        }
-    }
-    // method to read messages using thread
-    public void readMessage(){
-        new Thread( new Runnable() {
-
-            @Override
-            public void run() {
-                String msfFromGroupChat;
-
-                while(socket.isConnected()){
-                    try{
-                        msfFromGroupChat = buffReader.readLine();
-                        System.out.println(msfFromGroupChat);
-                    } catch (IOException e){
-                        closeAll(socket, buffReader, buffWriter);
-                    }
-
-                }
-
-            }
-
-        }).start();
-    }
-    // method to close everything in the socket
-    public void closeAll(Socket socket, BufferedReader buffReader, PrintWriter buffWriter){
+    public void run() {
         try{
-            if(buffReader!= null){
-                buffReader.close();
+            socket = new Socket("localhost", 9001);
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            out = new PrintWriter(socket.getOutputStream(), true);
+            out.println(name);
+            out.flush();
+        } catch (UnknownHostException e) {
+            logger.error(e.getMessage());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        logger.info("Connection accepted " + socket.getInetAddress() + ":" + socket.getPort());
+        logger.info("Sockets in and out ready!");
+        while (socket.isConnected()) {
+            try {
+                String messageFromClient = in.readLine();
+                out.println(name + ": " + messageFromClient);
+                out.flush();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-            if(buffWriter != null){
-                buffWriter.close();
+        }
+        }
+
+    public void closeAll(Socket socket, BufferedReader in, PrintWriter out){
+        try{
+            if(in!= null){
+                in.close();
+            }
+            if(out != null){
+                out.close();
             }
             if(socket != null){
                 socket.close();
@@ -78,15 +66,5 @@ public class Client {
         } catch (IOException e){
             e.getStackTrace();
         }
-    }
-
-
-    public static void main(String[] args) throws IOException {
-        Socket socket = new Socket("localhost", 9001);
-        Client client = new Client(socket);
-        client.readMessage();
-        client.sendMessage();
-
-
     }
 }

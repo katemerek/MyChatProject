@@ -6,6 +6,7 @@ import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import net.rgielen.fxweaver.core.FxWeaver;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -31,6 +32,7 @@ public class JavaFxApplication extends Application {
         Parent root = fxWeaver.loadView(LoginController.class);
         Scene scene = new Scene(root);
        primaryStage.setScene(scene);
+       primaryStage.initStyle(StageStyle.DECORATED);
         primaryStage.show();
     }
     @Override

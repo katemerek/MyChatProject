@@ -29,9 +29,8 @@ public class RegistrationService {
         Optional<Person> person = peopleRepository.findByName(name);
         if (person.isPresent()) {
             this.person = person.get();
-        } else throw new UsernameNotFoundException("Пользователь не найден! Пройдите регистрацию.");
+        } else throw new UsernameNotFoundException("Пользователь не найден! Пройдите регистрацию или проверьте имя пользователя.");
     }
-
 
         public ArrayList checkTrueLoggingStatus () {
         ArrayList<Person> loggedUsers = (ArrayList<Person>) peopleRepository.findAllByStatus(true);
@@ -42,6 +41,7 @@ public class RegistrationService {
     @Transactional
     public void register(Person person){
         person.setPassword(passwordEncoder.encode(person.getPassword()));
+        person.setStatus(false);
         peopleRepository.save(person);
     }
 }

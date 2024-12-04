@@ -1,6 +1,9 @@
 package com.github.katemerek.clients.controllers;
 
 import com.github.katemerek.clients.config.Settings;
+import com.github.katemerek.clients.util.ErrorResponse;
+import com.github.katemerek.clients.util.ErrorsUtil;
+import com.github.katemerek.clients.util.PersonNotCreated;
 import com.github.katemerek.dto.dto.PersonDto;
 import com.github.katemerek.dto.mapper.PersonMapper;
 import com.github.katemerek.dto.models.Person;
@@ -24,6 +27,8 @@ import org.springframework.stereotype.Component;
 
 import java.beans.XMLEncoder;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.time.LocalDateTime;
 
 @Component
 @FxmlView
@@ -53,6 +58,7 @@ public class RegistrationController  {
         personDto.setYearOfBirth(Integer.parseInt(this.txtYearOfBirth.getText()));
         System.out.println(personDto);
         Person personAdd = personMapper.toPerson(personDto);
+        personAdd.setStatus(false);
         System.out.println(personAdd);
         registrationService.register(personAdd);
         returnToLogin();

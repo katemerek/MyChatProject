@@ -38,7 +38,7 @@ public class ChatController {
         public void sendMessage() throws IOException {
             String msg = messageBox.getText();
             if (!messageBox.getText().isEmpty()) {
-                client.sendMessage();
+//                client.sendMessage();
                 messageBox.clear();
             }
         }

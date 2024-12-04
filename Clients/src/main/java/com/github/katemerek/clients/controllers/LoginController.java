@@ -1,6 +1,9 @@
 package com.github.katemerek.clients.controllers;
 
+import com.github.katemerek.clients.clients.Client;
+import com.github.katemerek.dto.dto.PersonDto;
 import com.github.katemerek.dto.mapper.PersonMapper;
+import com.github.katemerek.dto.models.Person;
 import com.github.katemerek.dto.services.RegistrationService;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -8,9 +11,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import lombok.RequiredArgsConstructor;
 import net.rgielen.fxweaver.core.FxWeaver;
 import net.rgielen.fxweaver.core.FxmlView;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -32,6 +37,7 @@ public class LoginController {
     private RegistrationController registrationController;
     private final PersonMapper personMapper;
     private final RegistrationService registrationService;
+    private final PasswordEncoder passwordEncoder;
 
 
     @FXML
@@ -40,10 +46,18 @@ public class LoginController {
     }
 
     public void loginUser() throws IOException {
-
-        Thread client1 = new Thread();
-        client1.start();
+        PersonDto p = new PersonDto();
+        p.setName(txtName.getText());
+        p.setPassword(txtPassword.getText());
+        Person pLogin = personMapper.toPerson(p);
+        registrationService.loadUserByName(pLogin.getName());
+        pLogin.setStatus(true);
+        Client client = new Client(pLogin.getName());
+        Thread thread = new Thread(client);
+        thread.start();
         switchOnChat();
+
+
 
 //        Client client2 = new Client(username(), new Socket("localhost", 8888));
 //        client2.readMessage();
@@ -63,9 +77,9 @@ public class LoginController {
 
     public void switchOnChat() {
         Parent root = fxWeaver.loadView(ChatController.class);
-        Stage secondaryStage = (Stage) buttonRegistration.getScene().getWindow();
-        secondaryStage.setScene(new Scene(root));
-        secondaryStage.show();
+        Stage tertiaryStage = (Stage) buttonLogin.getScene().getWindow();
+        tertiaryStage.setScene(new Scene(root));
+        tertiaryStage.show();
     }
 
 }

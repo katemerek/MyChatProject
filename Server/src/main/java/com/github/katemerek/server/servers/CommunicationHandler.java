@@ -1,5 +1,6 @@
 package com.github.katemerek.server.servers;
 
+import com.github.katemerek.dto.models.Message;
 import com.github.katemerek.dto.models.Person;
 import com.github.katemerek.dto.services.RegistrationService;
 import lombok.Data;
@@ -17,8 +18,8 @@ import java.util.ArrayList;
 @RequiredArgsConstructor
 public class CommunicationHandler extends Thread {
     private Person person;
-    private InputStream inputStream;
-    private OutputStream outputStream;
+    private BufferedReader in;
+    private BufferedWriter out;
     public Socket socket;
     public static ArrayList <Person> clientsOnline = new ArrayList<>();
     private Logger logger = LoggerFactory.getLogger(CommunicationHandler.class);
@@ -47,17 +48,16 @@ public class CommunicationHandler extends Thread {
     public void run() {
         logger.info("Starting communication thread");
         try{
-            inputStream = socket.getInputStream();
-            outputStream = socket.getOutputStream();
-            String firstMessage = String.valueOf(inputStream.read());
-            registrationService.loadUserByName(firstMessage);
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            String firstMessage = in.readLine();
             clientsOnline = registrationService.checkTrueLoggingStatus();
             broadcastMessage("Hello,  " + firstMessage + "! You have connected to chat!");
             Person person = new Person();
             person.setName(firstMessage);
             String messageFromClient;
             while (socket.isConnected()) {
-                messageFromClient = String.valueOf(inputStream.read());
+                messageFromClient = in.readLine();
                 logger.info(firstMessage + messageFromClient);
                 broadcastMessage(messageFromClient);
             }
@@ -67,7 +67,7 @@ public class CommunicationHandler extends Thread {
     } catch (Exception e){
         logger.error("Duplicate Username : " + person.getName(), e);
     } finally {
-        closeAll(socket, inputStream, outputStream);
+        closeAll(socket, in, out);
     }
     }
 
@@ -81,26 +81,26 @@ public class CommunicationHandler extends Thread {
     public void broadcastMessage(String messageToSend) throws IOException {
         for(Person client: clientsOnline){
             if(!client.getName().equals(person.getName())){
-                outputStream.write(messageToSend.getBytes());
-                outputStream.flush();
+                out.write(messageToSend);
+                out.flush();
             }
         }
     }
 
 
-    public synchronized void closeAll(Socket socket, InputStream inputStream, OutputStream outputStream) {
+    public synchronized void closeAll(Socket socket, BufferedReader in, BufferedWriter out) {
         logger.debug("All connections are starting to close");
         try {
-            if (inputStream != null) {
+            if (in != null) {
                 try {
-                    inputStream.close();
+                    in.close();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-            if (outputStream != null) {
+            if (out != null) {
                 try {
-                    outputStream.close();
+                    out.close();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
