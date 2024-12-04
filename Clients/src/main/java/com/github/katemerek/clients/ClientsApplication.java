@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 
 @SpringBootApplication
 @Configuration
-@ComponentScan("com.github.katemerek.dto")
+@ComponentScan("com.github.katemerek")
     public class ClientsApplication {
         public static void main(String[] args) {
             Application.launch(JavaFxApplication.class, args);
