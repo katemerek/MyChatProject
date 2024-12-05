@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -32,8 +33,8 @@ public class RegistrationService {
         } else throw new UsernameNotFoundException("Пользователь не найден! Пройдите регистрацию или проверьте имя пользователя.");
     }
 
-        public ArrayList checkTrueLoggingStatus () {
-        ArrayList<Person> loggedUsers = (ArrayList<Person>) peopleRepository.findAllByStatus(true);
+        public List <Person> checkTrueLoggingStatus () {
+        List<Person> loggedUsers = peopleRepository.findAllByStatus(true);
         return loggedUsers;
         }
 

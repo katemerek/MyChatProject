@@ -38,6 +38,7 @@ public class LoginController {
     private final PersonMapper personMapper;
     private final RegistrationService registrationService;
     private final PasswordEncoder passwordEncoder;
+    public Client client;
 
 
     @FXML
@@ -52,16 +53,11 @@ public class LoginController {
         Person pLogin = personMapper.toPerson(p);
         registrationService.loadUserByName(pLogin.getName());
         pLogin.setStatus(true);
-        Client client = new Client(pLogin.getName());
+        client = new Client(pLogin.getName());
         Thread thread = new Thread(client);
         thread.start();
-        switchOnChat();
+        switchOnChat(client);
 
-
-
-//        Client client2 = new Client(username(), new Socket("localhost", 8888));
-//        client2.readMessage();
-//        client2.sendMessage();
 
     }
     public String username(){
@@ -75,7 +71,7 @@ public class LoginController {
         secondaryStage.show();
     }
 
-    public void switchOnChat() {
+    public void switchOnChat(Client client) {
         Parent root = fxWeaver.loadView(ChatController.class);
         Stage tertiaryStage = (Stage) buttonLogin.getScene().getWindow();
         tertiaryStage.setScene(new Scene(root));

@@ -4,6 +4,7 @@ import com.github.katemerek.clients.clients.Client;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import lombok.RequiredArgsConstructor;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +19,7 @@ public class ChatController {
         @FXML Button buttonSend;
 
         private Client client;
+        private LoginController loginController;
 
         public ChatController(Client client) {
             this.client = client;
@@ -27,7 +29,7 @@ public class ChatController {
         public void sendMessage() throws IOException {
             String msg = messageBox.getText();
             if (!messageBox.getText().isEmpty()) {
-                client.sendMessage(msg);
+                Client.sendMessage(msg);
                 messageBox.clear();
             }
         }

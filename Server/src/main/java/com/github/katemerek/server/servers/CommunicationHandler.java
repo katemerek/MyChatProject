@@ -12,6 +12,7 @@ import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.List;
 
 
 @Data
@@ -21,7 +22,7 @@ public class CommunicationHandler extends Thread {
     private BufferedReader in;
     private PrintWriter out;
     public Socket socket;
-    public static ArrayList <Person> clientsOnline = new ArrayList<>();
+    public static ArrayList<CommunicationHandler> clients = new ArrayList<>();
     private Logger logger = LoggerFactory.getLogger(CommunicationHandler.class);
     private RegistrationService registrationService;
     public String user;
@@ -53,36 +54,33 @@ public class CommunicationHandler extends Thread {
             out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
             String firstMessage = in.readLine();
             user = firstMessage;
+            clients.add(this);
             System.out.println(firstMessage);
-//            clientsOnline = registrationService.checkTrueLoggingStatus();
             broadcastMessage("Hello,  " + user + "! You have connected to chat!");
             Person person = new Person();
             person.setName(user);
             String messageFromClient;
             while (socket.isConnected()) {
                 messageFromClient = in.readLine();
-                logger.info(firstMessage + messageFromClient);
-                broadcastMessage(messageFromClient);
+                logger.info(user + ": " + messageFromClient);
+                broadcastMessage(user + ": " + messageFromClient);
             }
-    } catch (
-    SocketException socketException) {
-        logger.error("Socket Exception for user");
-    } catch (Exception e){
-        logger.error("Duplicate Username");
-    } finally {
+    } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
         closeAll(socket, in, out);
     }
     }
 
 
     public void removeClientHandler() throws IOException {
-        clientsOnline.remove(this);
+        clients.remove(this);
         broadcastMessage("User " + person.getName() + " left the chat");
     }
 
 
     public void broadcastMessage(String messageToSend) throws IOException {
-        for(Person client: clientsOnline){
+        for(CommunicationHandler client: clients){
             if(!client.getName().equals(user)){
                 out.write(messageToSend);
                 out.flush();

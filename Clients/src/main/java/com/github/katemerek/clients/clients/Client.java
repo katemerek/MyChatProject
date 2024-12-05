@@ -18,7 +18,7 @@ public class Client extends Thread {
 
     private Socket socket;
     private BufferedReader in;
-    private PrintWriter out;
+    private static PrintWriter out;
     private LoginController loginController;
     public ChatController chatController;
     private String name;
@@ -26,34 +26,32 @@ public class Client extends Thread {
 
     public Client( String name) {
             this.name = name;
+            try {
+                this.socket = new Socket("localhost", 9001);
+                this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                this.out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+            }catch(IOException e) {
+                logger.error(e.getMessage());}
     }
     public void run() {
-        try{
-            socket = new Socket("localhost", 9001);
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            out = new PrintWriter(socket.getOutputStream(), true);
-            sendMessage(name);
-        } catch (UnknownHostException e) {
-            logger.error(e.getMessage());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        sendMessage(name);
         logger.info("Connection accepted " + socket.getPort());
         logger.info("Sockets in and out ready!");
-        while (socket.isConnected()) {
-            try {
-                String messageFromClient = in.readLine();
-                sendMessage (name + ": " + messageFromClient);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
+//        while (socket.isConnected()) {
+//            try {
+//                String messageFromClient = in.readLine();
+//                sendMessage (name + ": " + messageFromClient);
+//            } catch (IOException e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
         }
 
-        public void sendMessage(String message) {
+
+        public static void sendMessage(String message) {
         out.write(message);
-        out.println(message);
-        out.flush();
+            out.println();
+            out.flush();
         }
 
     public void closeAll(Socket socket, BufferedReader in, PrintWriter out){

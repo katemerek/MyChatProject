@@ -16,20 +16,20 @@ public class Server {
 
 
     public void startServer() {
-        try(ServerSocket listener = new ServerSocket(portNumber)) {
+        try(ServerSocket socket = new ServerSocket(portNumber)) {
             logger.info("Server started! Waiting for connections...");
             System.out.println("Server started!");
 
             System.out.println("Waiting for a client to connect...");
             try {
                 while (true) {
-                    new CommunicationHandler(listener.accept()).start();
+                    new CommunicationHandler(socket.accept()).start();
                     logger.info("New Client connected");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
-                listener.close();
+                socket.close();
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
