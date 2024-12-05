@@ -19,11 +19,12 @@ import java.util.ArrayList;
 public class CommunicationHandler extends Thread {
     private Person person;
     private BufferedReader in;
-    private BufferedWriter out;
+    private PrintWriter out;
     public Socket socket;
     public static ArrayList <Person> clientsOnline = new ArrayList<>();
     private Logger logger = LoggerFactory.getLogger(CommunicationHandler.class);
     private RegistrationService registrationService;
+    public String user;
     public CommunicationHandler (Socket socket) {
         this.socket = socket;
     }
@@ -49,12 +50,14 @@ public class CommunicationHandler extends Thread {
         logger.info("Starting communication thread");
         try{
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
             String firstMessage = in.readLine();
-            clientsOnline = registrationService.checkTrueLoggingStatus();
-            broadcastMessage("Hello,  " + firstMessage + "! You have connected to chat!");
+            user = firstMessage;
+            System.out.println(firstMessage);
+//            clientsOnline = registrationService.checkTrueLoggingStatus();
+            broadcastMessage("Hello,  " + user + "! You have connected to chat!");
             Person person = new Person();
-            person.setName(firstMessage);
+            person.setName(user);
             String messageFromClient;
             while (socket.isConnected()) {
                 messageFromClient = in.readLine();
@@ -63,9 +66,9 @@ public class CommunicationHandler extends Thread {
             }
     } catch (
     SocketException socketException) {
-        logger.error("Socket Exception for user " + person.getName(), socketException);
+        logger.error("Socket Exception for user");
     } catch (Exception e){
-        logger.error("Duplicate Username : " + person.getName(), e);
+        logger.error("Duplicate Username");
     } finally {
         closeAll(socket, in, out);
     }
@@ -80,7 +83,7 @@ public class CommunicationHandler extends Thread {
 
     public void broadcastMessage(String messageToSend) throws IOException {
         for(Person client: clientsOnline){
-            if(!client.getName().equals(person.getName())){
+            if(!client.getName().equals(user)){
                 out.write(messageToSend);
                 out.flush();
             }
@@ -88,7 +91,7 @@ public class CommunicationHandler extends Thread {
     }
 
 
-    public synchronized void closeAll(Socket socket, BufferedReader in, BufferedWriter out) {
+    public synchronized void closeAll(Socket socket, BufferedReader in, PrintWriter out) {
         logger.debug("All connections are starting to close");
         try {
             if (in != null) {

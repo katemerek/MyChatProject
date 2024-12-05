@@ -4,12 +4,9 @@ import com.github.katemerek.clients.clients.Client;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.layout.BorderPane;
-import lombok.Setter;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.springframework.stereotype.Component;
 
-import javax.swing.text.html.ImageView;
 import java.io.IOException;
 
 @Component
@@ -18,27 +15,19 @@ public class ChatController {
 
         @FXML private TextArea messageBox;
         @FXML ListView chatPane;
-        @FXML
-        BorderPane borderPane;
-        @FXML
-        ComboBox statusComboBox;
-        @FXML ImageView microphoneImageView;
         @FXML Button buttonSend;
 
         private Client client;
 
-
-
-
-//        private double xOffset;
-//        private double yOffset;
-//        Logger logger = LoggerFactory.getLogger(ChatController.class);
+        public ChatController(Client client) {
+            this.client = client;
+        }
 
 
         public void sendMessage() throws IOException {
             String msg = messageBox.getText();
             if (!messageBox.getText().isEmpty()) {
-//                client.sendMessage();
+                client.sendMessage(msg);
                 messageBox.clear();
             }
         }

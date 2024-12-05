@@ -32,24 +32,28 @@ public class Client extends Thread {
             socket = new Socket("localhost", 9001);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
-            out.println(name);
-            out.flush();
+            sendMessage(name);
         } catch (UnknownHostException e) {
             logger.error(e.getMessage());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        logger.info("Connection accepted " + socket.getInetAddress() + ":" + socket.getPort());
+        logger.info("Connection accepted " + socket.getPort());
         logger.info("Sockets in and out ready!");
         while (socket.isConnected()) {
             try {
                 String messageFromClient = in.readLine();
-                out.println(name + ": " + messageFromClient);
-                out.flush();
+                sendMessage (name + ": " + messageFromClient);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
+        }
+
+        public void sendMessage(String message) {
+        out.write(message);
+        out.println(message);
+        out.flush();
         }
 
     public void closeAll(Socket socket, BufferedReader in, PrintWriter out){
