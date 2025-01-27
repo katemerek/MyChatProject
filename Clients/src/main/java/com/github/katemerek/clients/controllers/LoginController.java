@@ -3,7 +3,6 @@ package com.github.katemerek.clients.controllers;
 import com.github.katemerek.clients.clients.Client;
 import com.github.katemerek.dto.dto.PersonDto;
 import com.github.katemerek.dto.mapper.PersonMapper;
-import com.github.katemerek.dto.models.Person;
 import com.github.katemerek.dto.services.RegistrationService;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -11,7 +10,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import lombok.RequiredArgsConstructor;
 import net.rgielen.fxweaver.core.FxWeaver;
 import net.rgielen.fxweaver.core.FxmlView;
@@ -19,6 +17,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 
 @Component
 @FxmlView
@@ -41,24 +43,23 @@ public class LoginController {
     public Client client;
 
 
-    @FXML
-    void initialize() {
-        assert buttonLogin != null : "fx:id=\"button\" was not injected: check your FXML file 'LoginController.fxml'.";
-    }
+//    @FXML
+//    void initialize() {
+//        assert buttonLogin != null : "fx:id=\"button\" was not injected: check your FXML file 'LoginController.fxml'.";
+//    }
 
-    public void loginUser() throws IOException {
+    public PersonDto loginUser() throws IOException, InterruptedException {
         PersonDto p = new PersonDto();
         p.setName(txtName.getText());
         p.setPassword(txtPassword.getText());
-        Person pLogin = personMapper.toPerson(p);
-        registrationService.loadUserByName(pLogin.getName());
-        pLogin.setStatus(true);
-        client = new Client(pLogin.getName());
+//        Person pLogin = personMapper.toPerson(p);
+//        registrationService.loadUserByName(pLogin.getName());
+//        pLogin.setStatus(true);
+        client = new Client(p.getName());
         Thread thread = new Thread(client);
         thread.start();
         switchOnChat(client);
-
-
+        return p;
     }
     public String username(){
         return txtName.getText();
@@ -72,7 +73,7 @@ public class LoginController {
     }
 
     public void switchOnChat(Client client) {
-        Parent root = fxWeaver.loadView(ChatController.class);
+        Parent root = fxWeaver.loadView(ChatControllerNew.class);
         Stage tertiaryStage = (Stage) buttonLogin.getScene().getWindow();
         tertiaryStage.setScene(new Scene(root));
         tertiaryStage.show();

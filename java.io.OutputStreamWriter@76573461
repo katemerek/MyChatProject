@@ -1,0 +1,4 @@
+Hello: Mans! You have connected to chat!
+Mans
+12:10:19.257 [Thread-1] INFO com.github.katemerek.server.servers.CommunicationHandler -- Mans: Hello!
+Mans: Hello!

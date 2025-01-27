@@ -1,6 +1,5 @@
 package com.github.katemerek.server.servers;
 
-import com.github.katemerek.dto.models.Message;
 import com.github.katemerek.dto.models.Person;
 import com.github.katemerek.dto.services.RegistrationService;
 import lombok.Data;
@@ -10,9 +9,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.Socket;
-import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 
 
 @Data
@@ -21,75 +19,74 @@ public class CommunicationHandler extends Thread {
     private Person person;
     private BufferedReader in;
     private PrintWriter out;
+//DataInputStream dataInputStream;
+//DataOutputStream dataOutputStream;
     public Socket socket;
+    private static HashSet<PrintWriter> writers = new HashSet<>();
     public static ArrayList<CommunicationHandler> clients = new ArrayList<>();
     private Logger logger = LoggerFactory.getLogger(CommunicationHandler.class);
     private RegistrationService registrationService;
     public String user;
+//    private ServerController serverController;
     public CommunicationHandler (Socket socket) {
         this.socket = socket;
     }
-
-
-
-//    public CommunicationHandler(Socket socket) {
-//        try {
-//            this.socket = socket;
-//            this.buffReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-//            this.buffWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
-//            this.name = buffReader.readLine();
-//            clients.add(this);
-//            broadcastMessage("Hello,  " + name + "! You have connected to chat!");
-//        } catch (IOException e) {
-//            System.err.println(e.getMessage());
-//        }
-//    }
 
 
     @Override
     public void run() {
         logger.info("Starting communication thread");
         try{
+//             dataInputStream = new DataInputStream(socket.getInputStream());
+//            dataOutputStream = new DataOutputStream(socket.getOutputStream());
+
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
-            String firstMessage = in.readLine();
-            user = firstMessage;
-            clients.add(this);
-            System.out.println(firstMessage);
-            broadcastMessage("Hello,  " + user + "! You have connected to chat!");
-            Person person = new Person();
-            person.setName(user);
+//            String firstMessage = in.readLine();
+            writers.add(out);
+//            if (writers.size() == 1) {
+//                System.out.println("Now you only one in chat");
+//            }else writeMessage("Hello " + firstMessage+ "! You have connected to chat!");
+//            user = firstMessage;
+////            clients.add(this);
+//            System.out.println(firstMessage);
+//            broadcastMessage("Hello,  " + user + "! You have connected to chat!");
+//            Person person = new Person();
+//            person.setName(user);
             String messageFromClient;
             while (socket.isConnected()) {
                 messageFromClient = in.readLine();
-                logger.info(user + ": " + messageFromClient);
-                broadcastMessage(user + ": " + messageFromClient);
+                if (messageFromClient != null) {
+                    logger.info(user + ": " + messageFromClient);
+                    writeMessage(user + ": " + messageFromClient);
+                }
             }
     } catch (IOException e) {
             throw new RuntimeException(e);
-        } finally {
-        closeAll(socket, in, out);
+//        } finally {
+//        closeAll(socket, in, out);
     }
     }
 
 
     public void removeClientHandler() throws IOException {
         clients.remove(this);
-        broadcastMessage("User " + person.getName() + " left the chat");
+        writeMessage("User " + user + " left the chat");
     }
-
-
-    public void broadcastMessage(String messageToSend) throws IOException {
-        for(CommunicationHandler client: clients){
-            if(!client.getName().equals(user)){
-                out.write(messageToSend);
-                out.flush();
-            }
+    public void writeMessage(String message) throws IOException {
+        for (PrintWriter writer : writers) {
+                writer.println();
+                writer.flush();
         }
     }
 
+    public void addUserToChat(Person person) {
 
-    public synchronized void closeAll(Socket socket, BufferedReader in, PrintWriter out) {
+    }
+
+
+
+    public synchronized void closeAll(Socket socket, BufferedReader in, BufferedWriter out) {
         logger.debug("All connections are starting to close");
         try {
             if (in != null) {

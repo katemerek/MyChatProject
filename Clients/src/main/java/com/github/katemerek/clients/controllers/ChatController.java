@@ -2,6 +2,9 @@ package com.github.katemerek.clients.controllers;
 
 import com.github.katemerek.clients.clients.Client;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import lombok.RequiredArgsConstructor;
@@ -19,11 +22,12 @@ public class ChatController {
         @FXML Button buttonSend;
 
         private Client client;
-        private LoginController loginController;
+    ObservableList<String> chatMessages = FXCollections.observableArrayList();
 
         public ChatController(Client client) {
             this.client = client;
         }
+
 
 
         public void sendMessage() throws IOException {
@@ -31,6 +35,7 @@ public class ChatController {
             if (!messageBox.getText().isEmpty()) {
                 Client.sendMessage(msg);
                 messageBox.clear();
+                chatPane.getItems().add(messageBox.getText());
             }
         }
 
@@ -40,6 +45,12 @@ public class ChatController {
             System.exit(0);
         }
 
+    //Method use to handle button press that submits the 1st user's text to the listview.
+    @FXML
+    private void handleUser1SubmitMessage(ActionEvent event) {
+        chatMessages.add("User 1: " + messageBox.getText());//get 1st user's text from his/her textfield and add message to observablelist
+        messageBox.setText("");//clear 1st user's textfield
+    }
 
 //        public void logoutScene() {
 //            Platform.runLater(() -> {
