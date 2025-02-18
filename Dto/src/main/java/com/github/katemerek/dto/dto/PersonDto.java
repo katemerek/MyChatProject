@@ -1,6 +1,5 @@
 package com.github.katemerek.dto.dto;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;

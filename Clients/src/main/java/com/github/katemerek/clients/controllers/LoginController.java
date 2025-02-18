@@ -8,13 +8,11 @@ import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import lombok.RequiredArgsConstructor;
 import net.rgielen.fxweaver.core.FxWeaver;
 import net.rgielen.fxweaver.core.FxmlView;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -23,7 +21,12 @@ import java.io.IOException;
 @FxmlView
 @RequiredArgsConstructor
 public class LoginController {
+
     private final FxWeaver fxWeaver;
+    private final PersonMapper personMapper;
+    private final RegistrationService registrationService;
+    private PersonDto p;
+
     @FXML
     private TextField txtName;
     @FXML
@@ -33,30 +36,17 @@ public class LoginController {
     @FXML
     Button buttonLogin;
 
-    private RegistrationController registrationController;
-    private final PersonMapper personMapper;
-    private final RegistrationService registrationService;
-    private final PasswordEncoder passwordEncoder;
-    private PersonDto p;
 
-    private String name;
-
-
-    public PersonDto loginUser() throws IOException, InterruptedException {
+    public PersonDto loginUser() throws IOException {
         p = new PersonDto();
         p.setName(txtName.getText());
         p.setPassword(txtPassword.getText());
         Person pLogin = personMapper.toPerson(p);
         registrationService.loadUserByName(pLogin.getName());
-//        pLogin.setStatus(true);
-//      Client client = new Client();
-//      client.run();
         switchOnChat();
         return p;
     }
-    public String username(){
-        return txtName.getText();
-    }
+
 
     public void addNewUser() {
         Parent root = fxWeaver.loadView(RegistrationController.class);
@@ -65,13 +55,13 @@ public class LoginController {
         secondaryStage.show();
     }
 
-    public void switchOnChat() throws IOException {
+
+    public void switchOnChat() {
         Parent root = fxWeaver.loadView(ChatControllerNew.class);
-        ChatControllerNew chatControllerNew = fxWeaver.loadController (ChatControllerNew.class);
+        ChatControllerNew chatControllerNew = fxWeaver.loadController(ChatControllerNew.class);
         chatControllerNew.setPersonDto(p);
         Stage tertiaryStage = (Stage) buttonLogin.getScene().getWindow();
         tertiaryStage.setScene(new Scene(root));
         tertiaryStage.show();
     }
-
 }

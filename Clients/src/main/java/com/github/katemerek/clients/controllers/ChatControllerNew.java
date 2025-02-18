@@ -6,7 +6,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.springframework.stereotype.Component;
 
@@ -24,12 +23,8 @@ public class ChatControllerNew {
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
     LoginController loginController;
-
-    @Setter
-    PersonDto personDto;
-
     private Socket socket;
-
+    PersonDto personDto;
 
     @FXML
     public TextArea ta;
@@ -45,38 +40,38 @@ public class ChatControllerNew {
         this.personDto = personDto;
     }
 
+
     @FXML
     public void writeMessage() throws IOException {
-//        sendMessageAnother();
-        updateTextArea("kuku");
+        sendMessageAnother();
     }
+
 
     @FXML
     public synchronized void beginClientChat() throws IOException {
         processInput(personDto);
-//        buttonBegin.setDisable(true);
+        buttonBegin.setDisable(true);
     }
+
 
     public String getInputFieldValue() {
         return tf.getText();
     }
 
-    public void processInput(PersonDto personDto) throws IOException {
 
+    public void processInput(PersonDto personDto) throws IOException {
         try (Socket socket = new Socket("localhost", 9001);
              BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
              BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"));
         ) {
-            // Поток для чтения сообщений от сервера
+
             new Thread(() -> {
                 try {
                     String serverMessage;
                     while ((serverMessage = bufferedReader.readLine()) != null) {
                         System.out.println("Сообщение от сервера: " + serverMessage);
-//                        String finalMessage = serverMessage;
-//                        Platform.runLater(() -> {
-//                            ta.appendText(finalMessage);
-//                        });
+                        String finalMessage = serverMessage;
+                        updateTextArea(serverMessage);
                     }
                 } catch (IOException e) {
                     System.out.println("Ошибка при чтении сообщений от сервера: " + e.getMessage() + LocalDateTime.now());
@@ -84,12 +79,9 @@ public class ChatControllerNew {
                 }
             }).start();
 
-            // Запрашиваем имя пользователя
             if (personDto != null) {
                 String userName = personDto.getName();
-                ta.setStyle("-fx-text-fill: red;");
                 updateTextArea("Добро пожаловать, " + userName + "\r\n");
-                ta.appendText("Добро пожаловать, " + userName + "\r\n"); // Обновляем UI
                 bufferedWriter.write(userName + "\r\n");
                 bufferedWriter.flush();
             }
@@ -97,16 +89,6 @@ public class ChatControllerNew {
     }
 
 
-//             Отправка сообщений на сервер
-//            String inputText;
-//            while ((inputText = getInputFieldValue()) != null) {
-//                bufferedWriter.write(inputText);
-//                bufferedWriter.newLine();
-//                bufferedWriter.flush();
-//                updateTextArea();
-//            }
-
-    // Метод для отправки сообщения
     private void sendMessageAnother() {
         String message = getInputFieldValue();
         if (message != null && !message.isEmpty()) {

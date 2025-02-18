@@ -7,7 +7,6 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.UniqueElements;
 
 @Entity
 @Table(name = "users")
@@ -34,6 +33,4 @@ public class Person {
     @Column(name = "year_of_birth")
     private int yearOfBirth;
 
-    @Column(name = "status")
-    private Boolean status;
 }

@@ -26,15 +26,18 @@ public class JavaFxApplication extends Application {
                 .run(args);
     }
 
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         FxWeaver fxWeaver = applicationContext.getBean(FxWeaver.class);
         Parent root = fxWeaver.loadView(LoginController.class);
         Scene scene = new Scene(root);
-       primaryStage.setScene(scene);
-       primaryStage.initStyle(StageStyle.DECORATED);
+        primaryStage.setScene(scene);
+        primaryStage.initStyle(StageStyle.DECORATED);
         primaryStage.show();
     }
+
+
     @Override
     public void stop() {
         this.applicationContext.close();

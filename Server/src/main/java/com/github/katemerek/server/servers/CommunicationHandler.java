@@ -1,7 +1,6 @@
 package com.github.katemerek.server.servers;
 
 import com.github.katemerek.dto.models.Person;
-import com.github.katemerek.dto.services.RegistrationService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -10,8 +9,6 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.net.Socket;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
 
 import static com.github.katemerek.server.servers.Server.broadcastMessage;
 import static com.github.katemerek.server.servers.Server.removeClient;
@@ -24,8 +21,8 @@ public class CommunicationHandler implements Runnable {
     private Socket socket;
     private BufferedWriter bufferedWriter;
     private BufferedReader bufferedReader;
-
     private Logger logger = LoggerFactory.getLogger(CommunicationHandler.class);
+
 
     public CommunicationHandler(Socket socket) {
         this.socket = socket;
@@ -40,23 +37,19 @@ public class CommunicationHandler implements Runnable {
             bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"));
 
             String clientMessage;
-            while ((clientMessage = bufferedReader.readLine()) != null) { // Чтение сообщений от клиента
-                if (clientMessage == null) {
-                    System.out.println("Соединение закрыто сервером");
-                    break;
-                }
+            while ((clientMessage = bufferedReader.readLine()) != null) {
                 System.out.println("Получено сообщение от клиента: " + clientMessage);
-                broadcastMessage(clientMessage, this); // Рассылка сообщения всем клиентам
+                broadcastMessage(clientMessage, this);
             }
         } catch (IOException e) {
             System.out.println("Ошибка при работе с клиентом: " + e.getMessage() + LocalDateTime.now());
         } finally {
-            closeAll(socket, bufferedReader, bufferedWriter); // Закрытие сокета
-            removeClient(this); // Удаление клиента из списка
+            closeAll(socket, bufferedReader, bufferedWriter);
+            removeClient(this);
         }
     }
 
-    // Метод для отправки сообщения клиенту
+
     public void sendMessage(String message) throws IOException {
         bufferedWriter.write(message + "\r\n");
         bufferedWriter.newLine();
