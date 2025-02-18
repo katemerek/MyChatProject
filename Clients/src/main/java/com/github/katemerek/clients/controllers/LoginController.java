@@ -1,13 +1,14 @@
 package com.github.katemerek.clients.controllers;
 
-import com.github.katemerek.clients.clients.Client;
 import com.github.katemerek.dto.dto.PersonDto;
 import com.github.katemerek.dto.mapper.PersonMapper;
+import com.github.katemerek.dto.models.Person;
 import com.github.katemerek.dto.services.RegistrationService;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import lombok.RequiredArgsConstructor;
@@ -17,10 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 
 @Component
 @FxmlView
@@ -40,25 +37,21 @@ public class LoginController {
     private final PersonMapper personMapper;
     private final RegistrationService registrationService;
     private final PasswordEncoder passwordEncoder;
-    public Client client;
+    private PersonDto p;
 
+    private String name;
 
-//    @FXML
-//    void initialize() {
-//        assert buttonLogin != null : "fx:id=\"button\" was not injected: check your FXML file 'LoginController.fxml'.";
-//    }
 
     public PersonDto loginUser() throws IOException, InterruptedException {
-        PersonDto p = new PersonDto();
+        p = new PersonDto();
         p.setName(txtName.getText());
         p.setPassword(txtPassword.getText());
-//        Person pLogin = personMapper.toPerson(p);
-//        registrationService.loadUserByName(pLogin.getName());
+        Person pLogin = personMapper.toPerson(p);
+        registrationService.loadUserByName(pLogin.getName());
 //        pLogin.setStatus(true);
-        client = new Client(p.getName());
-        Thread thread = new Thread(client);
-        thread.start();
-        switchOnChat(client);
+//      Client client = new Client();
+//      client.run();
+        switchOnChat();
         return p;
     }
     public String username(){
@@ -72,8 +65,10 @@ public class LoginController {
         secondaryStage.show();
     }
 
-    public void switchOnChat(Client client) {
+    public void switchOnChat() throws IOException {
         Parent root = fxWeaver.loadView(ChatControllerNew.class);
+        ChatControllerNew chatControllerNew = fxWeaver.loadController (ChatControllerNew.class);
+        chatControllerNew.setPersonDto(p);
         Stage tertiaryStage = (Stage) buttonLogin.getScene().getWindow();
         tertiaryStage.setScene(new Scene(root));
         tertiaryStage.show();

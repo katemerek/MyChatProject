@@ -9,26 +9,25 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.Socket;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
+
+import static com.github.katemerek.server.servers.Server.broadcastMessage;
+import static com.github.katemerek.server.servers.Server.removeClient;
 
 
 @Data
 @RequiredArgsConstructor
-public class CommunicationHandler extends Thread {
+public class CommunicationHandler implements Runnable {
     private Person person;
-    private BufferedReader in;
-    private PrintWriter out;
-//DataInputStream dataInputStream;
-//DataOutputStream dataOutputStream;
-    public Socket socket;
-    private static HashSet<PrintWriter> writers = new HashSet<>();
-    public static ArrayList<CommunicationHandler> clients = new ArrayList<>();
+    private Socket socket;
+    private BufferedWriter bufferedWriter;
+    private BufferedReader bufferedReader;
+
     private Logger logger = LoggerFactory.getLogger(CommunicationHandler.class);
-    private RegistrationService registrationService;
-    public String user;
-//    private ServerController serverController;
-    public CommunicationHandler (Socket socket) {
+
+    public CommunicationHandler(Socket socket) {
         this.socket = socket;
     }
 
@@ -36,54 +35,33 @@ public class CommunicationHandler extends Thread {
     @Override
     public void run() {
         logger.info("Starting communication thread");
-        try{
-//             dataInputStream = new DataInputStream(socket.getInputStream());
-//            dataOutputStream = new DataOutputStream(socket.getOutputStream());
+        try {
+            bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
+            bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"));
 
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
-//            String firstMessage = in.readLine();
-            writers.add(out);
-//            if (writers.size() == 1) {
-//                System.out.println("Now you only one in chat");
-//            }else writeMessage("Hello " + firstMessage+ "! You have connected to chat!");
-//            user = firstMessage;
-////            clients.add(this);
-//            System.out.println(firstMessage);
-//            broadcastMessage("Hello,  " + user + "! You have connected to chat!");
-//            Person person = new Person();
-//            person.setName(user);
-            String messageFromClient;
-            while (socket.isConnected()) {
-                messageFromClient = in.readLine();
-                if (messageFromClient != null) {
-                    logger.info(user + ": " + messageFromClient);
-                    writeMessage(user + ": " + messageFromClient);
+            String clientMessage;
+            while ((clientMessage = bufferedReader.readLine()) != null) { // Чтение сообщений от клиента
+                if (clientMessage == null) {
+                    System.out.println("Соединение закрыто сервером");
+                    break;
                 }
+                System.out.println("Получено сообщение от клиента: " + clientMessage);
+                broadcastMessage(clientMessage, this); // Рассылка сообщения всем клиентам
             }
-    } catch (IOException e) {
-            throw new RuntimeException(e);
-//        } finally {
-//        closeAll(socket, in, out);
-    }
-    }
-
-
-    public void removeClientHandler() throws IOException {
-        clients.remove(this);
-        writeMessage("User " + user + " left the chat");
-    }
-    public void writeMessage(String message) throws IOException {
-        for (PrintWriter writer : writers) {
-                writer.println();
-                writer.flush();
+        } catch (IOException e) {
+            System.out.println("Ошибка при работе с клиентом: " + e.getMessage() + LocalDateTime.now());
+        } finally {
+            closeAll(socket, bufferedReader, bufferedWriter); // Закрытие сокета
+            removeClient(this); // Удаление клиента из списка
         }
     }
 
-    public void addUserToChat(Person person) {
-
+    // Метод для отправки сообщения клиенту
+    public void sendMessage(String message) throws IOException {
+        bufferedWriter.write(message + "\r\n");
+        bufferedWriter.newLine();
+        bufferedWriter.flush();
     }
-
 
 
     public synchronized void closeAll(Socket socket, BufferedReader in, BufferedWriter out) {
