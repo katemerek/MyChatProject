@@ -6,11 +6,10 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.4.0</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath/>
     </parent>
     <groupId>com.github.katemerek</groupId>
     <artifactId>Dto</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
     <name>Dto</name>
     <description>Dto</description>
     <url/>
