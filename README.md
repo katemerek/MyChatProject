@@ -1,14 +1,31 @@
 # JavaFX Chat Application
 ## Description
-This is a simple multi-client chat application using Java sockets and JavaFX (GUI). First, the user goes through registration, then authentication, and only after that the chat window opens and you can communicate.
-Currently, in development
+This is a simple multi-client chat application using Java sockets and JavaFX (GUI). First, the user goes through **registration**, then **authentication**, and only after that the chat window opens and you can **communicate**.
+The project is currently under development, below is To-Do-list.
 
-### Steps to run the application
-- Import this project as a Maven project.
-- Run the Server.
-- Run the ClientApplication and ClientApplicationTwo.
-- Add a new sensor to table sensor from POST request. Sensor name must be unique.
-- Add a new measurement to table measurement: value temperature,  (The sensor field must match one of the sensor names registered in the sensor table)
 
-Test the API with client tool such as special app (RestClientForWeatherApp) or Postman to perform various operations.
-The app will start running at <http://localhost:8080/api/v1>.
+
+### Project Requirements
+
+- JDK 17
+- JavaFX
+- PostgresSQL
+
+### Project Structure
+
+- The "Clients" module contains the client-side of the project.
+- The "Server" module contains the server-side of the project.
+- The "lib" folder contains the required JavaFX JAR files.
+- The "script.sql" file contains the database schema for generation table users.
+
+## Instructions
+
+### Database Setup
+1. Create a PostgresSQL database named "chat".
+2. Import the "script.sql" into the database.
+
+### Application Setup
+All application components run on a localhost.
+1. Run the Server(port 9001).
+2. Run the ClientsApplication (port 8080).
+3. Run the ClientsApplicationTwo (port 9003).
