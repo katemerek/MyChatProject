@@ -32,3 +32,7 @@ All application components run on a localhost.
 1. Run the Server(port 9001).
 2. Run the ClientsApplication (port 8080).
 3. Run the ClientsApplicationTwo (port 9003).
+
+### To-Do-List
+1. Visualizing errors in pop-up windows JavaFX.
+2. Add a button Logout to the chat window.
