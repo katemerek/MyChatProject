@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.katemerek.clients.controllers.ChatControllerNew">
+   <children>
+      <Label layoutX="164.0" layoutY="1.0" text="Добро пожаловать в MyChat!" textFill="#bf1717">
+         <font>
+            <Font size="21.0" />
+         </font>
+      </Label>
+      <TextField fx:id="tf" layoutY="272.0" prefHeight="49.0" prefWidth="600.0" promptText="Type a message..." />
+      <Button fx:id="buttonSend" layoutX="502.0" layoutY="354.0" mnemonicParsing="false" onAction="#sendMessage" text="Отправить" />
+      <Button fx:id="buttonBegin" layoutX="370.0" layoutY="354.0" mnemonicParsing="false" onAction="#startChat" text="Начать общение" />
+      <TextArea fx:id="ta" editable="false" layoutY="32.0" prefHeight="238.0" prefWidth="600.0" wrapText="true" />
+   </children>
+</AnchorPane>

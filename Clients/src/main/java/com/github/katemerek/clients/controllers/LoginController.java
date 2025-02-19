@@ -1,25 +1,34 @@
 package com.github.katemerek.clients.controllers;
 
-import com.github.katemerek.clients.clients.Client;
-import com.github.katemerek.clients.mapper.PersonMapper;
-import com.github.katemerek.clients.services.RegistrationService;
+import com.github.katemerek.clients.config.PersonDtoService;
+import com.github.katemerek.dto.dto.PersonDto;
+import com.github.katemerek.dto.mapper.PersonMapper;
+import com.github.katemerek.dto.models.Person;
+import com.github.katemerek.dto.services.RegistrationService;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import lombok.RequiredArgsConstructor;
 import net.rgielen.fxweaver.core.FxWeaver;
 import net.rgielen.fxweaver.core.FxmlView;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.net.Socket;
 
 @Component
 @FxmlView
+@RequiredArgsConstructor
 public class LoginController {
+
     private final FxWeaver fxWeaver;
+    private final PersonMapper personMapper;
+    private final RegistrationService registrationService;
+    private final PersonDtoService personDtoService;
+
     @FXML
     private TextField txtName;
     @FXML
@@ -29,37 +38,17 @@ public class LoginController {
     @FXML
     Button buttonLogin;
 
-    private RegistrationController registrationController;
-    private final PersonMapper personMapper;
-    private final RegistrationService registrationService;
-
-    public LoginController(PersonMapper personMapper, RegistrationService registrationService, RegistrationController registrationController, FxWeaver fxWeaver) {
-        this.personMapper = personMapper;
-        this.registrationService = registrationService;
-        this.registrationController = registrationController;
-        this.fxWeaver = fxWeaver;
-    }
-
-    @FXML
-    void initialize() {
-        assert buttonLogin != null : "fx:id=\"button\" was not injected: check your FXML file 'LoginController.fxml'.";
-    }
 
     public void loginUser() throws IOException {
-        registrationService.loadUserByName(txtName.getText());
-        Client client1 = new Client(txtName.getText(), new Socket("localhost", 8888));
-        client1.readMessage();
-        client1.sendMessage();
+        PersonDto p = new PersonDto();
+        p.setName(txtName.getText());
+        p.setPassword(txtPassword.getText());
+        Person pLogin = personMapper.toPerson(p);
+        registrationService.loadUserByName(pLogin.getName());
+        personDtoService.setCurrentUser(p);
         switchOnChat();
-
-//        Client client2 = new Client(username(), new Socket("localhost", 8888));
-//        client2.readMessage();
-//        client2.sendMessage();
-
     }
-    public String username(){
-        return txtName.getText();
-    }
+
 
     public void addNewUser() {
         Parent root = fxWeaver.loadView(RegistrationController.class);
@@ -68,11 +57,11 @@ public class LoginController {
         secondaryStage.show();
     }
 
-    public void switchOnChat() {
-        Parent root = fxWeaver.loadView(ChatController.class);
-        Stage secondaryStage = (Stage) buttonRegistration.getScene().getWindow();
-        secondaryStage.setScene(new Scene(root));
-        secondaryStage.show();
-    }
 
+    public void switchOnChat() {
+        Parent root = fxWeaver.loadView(ChatControllerNew.class);
+        Stage tertiaryStage = (Stage) buttonLogin.getScene().getWindow();
+        tertiaryStage.setScene(new Scene(root));
+        tertiaryStage.show();
+    }
 }
