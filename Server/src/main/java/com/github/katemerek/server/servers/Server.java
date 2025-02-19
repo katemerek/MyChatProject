@@ -1,8 +1,6 @@
 package com.github.katemerek.server.servers;
 
 import lombok.Data;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -16,35 +14,21 @@ import java.util.Set;
 @Data
 public class Server {
     private static final int portNumber = 9001;
-    static Logger logger = LoggerFactory.getLogger(Server.class);
-    private static final Set<CommunicationHandler> clients = Collections.synchronizedSet(new HashSet<>());
+    static final Set<CommunicationHandler> clients = Collections.synchronizedSet(new HashSet<>());
 
     public void startServer() throws IOException {
         try (ServerSocket serverSocket = new ServerSocket(portNumber)) {
-            logger.info("Server started! Waiting for connections...");
-            try {
-                while (true) {
-                    Socket socket = serverSocket.accept();
-                    System.out.println("Новый клиент подключен: " + socket);
+            System.out.println("Сервер запущен! Ожидает соединение...");
+            while (true) {
+                Socket socket = serverSocket.accept();
+                System.out.println("Новый клиент подключен: " + socket);
 
-                    CommunicationHandler communicationHandler = new CommunicationHandler(socket);
-                    clients.add(communicationHandler);
-                    new Thread(communicationHandler).start();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
+                CommunicationHandler communicationHandler = new CommunicationHandler(socket);
+                clients.add(communicationHandler);
+                new Thread(communicationHandler).start();
             }
-        }
-    }
-
-
-    public static void broadcastMessage(String message, CommunicationHandler sender) throws IOException {
-        for (CommunicationHandler client : clients) {
-            synchronized (clients) {
-                if (client != sender) { // Не отправляем сообщение отправителю
-                    client.sendMessage(message + "\r\n");
-                }
-            }
+        } catch (IOException e) {
+            e.getStackTrace();
         }
     }
 

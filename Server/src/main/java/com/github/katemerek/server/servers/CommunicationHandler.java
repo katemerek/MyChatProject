@@ -1,27 +1,22 @@
 package com.github.katemerek.server.servers;
 
-import com.github.katemerek.dto.models.Person;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 
-import static com.github.katemerek.server.servers.Server.broadcastMessage;
-import static com.github.katemerek.server.servers.Server.removeClient;
+import static com.github.katemerek.server.servers.Server.*;
 
 
 @Data
 @RequiredArgsConstructor
 public class CommunicationHandler implements Runnable {
-    private Person person;
     private Socket socket;
     private BufferedWriter bufferedWriter;
     private BufferedReader bufferedReader;
-    private Logger logger = LoggerFactory.getLogger(CommunicationHandler.class);
 
 
     public CommunicationHandler(Socket socket) {
@@ -31,13 +26,16 @@ public class CommunicationHandler implements Runnable {
 
     @Override
     public void run() {
-        logger.info("Starting communication thread");
+        System.out.println("Запуск потока для чтения сообщений от клиента");
         try {
-            bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
-            bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"));
+            bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
+            bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8));
 
-            String clientMessage;
-            while ((clientMessage = bufferedReader.readLine()) != null) {
+            while (true) {
+                String clientMessage = this.bufferedReader.readLine();
+                if (clientMessage == null) {
+                    return;
+                }
                 System.out.println("Получено сообщение от клиента: " + clientMessage);
                 broadcastMessage(clientMessage, this);
             }
@@ -49,40 +47,30 @@ public class CommunicationHandler implements Runnable {
         }
     }
 
+    public void broadcastMessage(String clientMessage, CommunicationHandler sender) throws IOException {
+        for (CommunicationHandler client : clients) {
+//            if (client !=sender) {
+            client.sendMessage(clientMessage);
+//            }
+        }
+    }
+
 
     public void sendMessage(String message) throws IOException {
-        bufferedWriter.write(message + "\r\n");
+        bufferedWriter.write(message + "\n");
         bufferedWriter.newLine();
         bufferedWriter.flush();
     }
 
 
-    public synchronized void closeAll(Socket socket, BufferedReader in, BufferedWriter out) {
-        logger.debug("All connections are starting to close");
+    public void closeAll(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
+        System.out.println("Закрываем все открытые соединения");
         try {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            if (out != null) {
-                try {
-                    out.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            if (socket != null) {
-                try {
-                    socket.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            if (bufferedReader != null) bufferedReader.close();
+            if (bufferedWriter != null) bufferedWriter.close();
+            if (socket != null) socket.close();
+        } catch (IOException e) {
+            e.getStackTrace();
         }
     }
 }

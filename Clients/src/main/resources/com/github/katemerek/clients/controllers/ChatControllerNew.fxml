@@ -15,8 +15,8 @@
          </font>
       </Label>
       <TextField fx:id="tf" layoutY="272.0" prefHeight="49.0" prefWidth="600.0" promptText="Type a message..." />
-      <Button fx:id="buttonSend" layoutX="502.0" layoutY="354.0" mnemonicParsing="false" onAction="#writeMessage" text="Отправить" />
-      <Button fx:id="buttonBegin" layoutX="370.0" layoutY="354.0" mnemonicParsing="false" onAction="#beginClientChat" text="Начать общение" />
+      <Button fx:id="buttonSend" layoutX="502.0" layoutY="354.0" mnemonicParsing="false" onAction="#sendMessage" text="Отправить" />
+      <Button fx:id="buttonBegin" layoutX="370.0" layoutY="354.0" mnemonicParsing="false" onAction="#startChat" text="Начать общение" />
       <TextArea fx:id="ta" editable="false" layoutY="32.0" prefHeight="238.0" prefWidth="600.0" wrapText="true" />
    </children>
 </AnchorPane>
