@@ -1,8 +1,11 @@
 # JavaFX Chat Application
 ## Description
 This is a simple multi-client chat application using Java sockets and JavaFX (GUI). First, the user goes through **registration**, then **authentication**, and only after that the chat window opens and you can **communicate**.
-The project is currently under development, below is To-Do-list.
+The project is currently under development, below is To-Do-list. 
 
+This video demonstrates the current version of the application:
+
+https://github.com/user-attachments/assets/b2654dad-4adc-42ff-a545-df19d1938c62
 
 
 ### Project Requirements
