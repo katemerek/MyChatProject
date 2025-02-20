@@ -36,3 +36,4 @@ All application components run on a localhost.
 ### To-Do-List
 1. Visualizing errors in pop-up windows JavaFX.
 2. Add a button Logout to the chat window.
+3. Add tests to the project.
